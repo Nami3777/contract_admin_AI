@@ -61,7 +61,7 @@ AI system that extracts data from PDFs, compares side-by-side, and flags discrep
 
 Background: 2 years as Field Inspector on heavy civil infrastructure construction, observed contract administration workflow inefficiencies
 
-**Contact:** [LinkedIn](www.linkedin.com/in/namyun-kim-730626182) | [Email](namyun.kim@ue-germany.de)
+**Contact:** [LinkedIn](https://www.linkedin.com/in/namyun-kim-730626182) | [Email](mailto:namyun.kim@ue-germany.de)
 
 ---
 
