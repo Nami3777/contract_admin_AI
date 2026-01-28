@@ -6,7 +6,7 @@ This folder contains the primary case study presentation demonstrating how AI ca
 
 ### Main Document
 
-**[Contract_Admin_AI_Case_Study.pdf](Contract_Administration_AI_Automating_Daily_Work_Record_Reconciliation.pdf)**
+**[Contract_Admin_AI_Case_Study.pdf](Contract_Admin_AI_Case_Study.pdf)**
 
 *15-slide presentation covering:*
 - Problem identification and user research
