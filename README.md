@@ -22,7 +22,11 @@ AI system that extracts data from PDFs, compares side-by-side, and flags discrep
 
 ## 📊 View Case Study
 
-**→ [Download Presentation (PDF)](presentation/Contract_Admin_AI_Case_Study.pdf)** ⭐ **START HERE**
+**→ [📥 Download Presentation (PDF)](presentation/Contract_Admin_AI_Case_Study.pdf)** ⭐ **START HERE**
+
+*10-minute read with visuals, examples, and ROI analysis*
+
+---
 
 *10-minute read with visuals, examples, and ROI analysis*
 
