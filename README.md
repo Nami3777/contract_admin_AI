@@ -28,10 +28,6 @@ AI system that extracts data from PDFs, compares side-by-side, and flags discrep
 
 ---
 
-*10-minute read with visuals, examples, and ROI analysis*
-
----
-
 ## 📚 Additional Documentation
 
 - [User Research](docs/USER_RESEARCH.md) - Detailed problem analysis
