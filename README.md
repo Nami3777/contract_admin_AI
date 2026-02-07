@@ -31,7 +31,7 @@ AI system that extracts data from PDFs, compares side-by-side, and flags discrep
 ## 📚 Additional Documentation
 
 - [User Research](docs/User_Research.md) - Detailed problem analysis
-- [Solution Design](docs/SOLUTION_DESIGN.md) - Technical decisions
+- [Solution Design](docs/Solution_Design.md) - Technical decisions
 - [AI Governance](docs/AI_GOVERNANCE.md) - Validation & compliance
 
 ---
