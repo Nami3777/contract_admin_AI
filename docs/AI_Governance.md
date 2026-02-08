@@ -2,7 +2,7 @@
 ## Validation, Compliance & Responsible AI
 
 **Project:** AI-Powered Document Reconciliation Platform  
-**Author:** [Your Name]  
+**Author:** Namyun Kim  
 **Last Updated:** February 2026
 
 ---
