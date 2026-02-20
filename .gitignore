@@ -32,6 +32,9 @@ markdown_output/
 .DS_Store
 Thumbs.db
 
+# Office temp files
+~$*
+
 # Secrets and private config
 .env
 secrets.json
@@ -44,3 +47,10 @@ workspace/_config/project.local.md
 # Sensitive contract documents — real project files, do not publish
 *.pdf
 Change Order/
+
+# Original presentation folder (replaced by case_study/)
+presentation/
+
+# Input/output data directories
+input/
+output/
