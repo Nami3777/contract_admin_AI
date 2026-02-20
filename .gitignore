@@ -7,6 +7,7 @@ __pycache__/
 env/
 venv/
 ENV/
+.venv/
 
 # Database
 *.db
@@ -21,13 +22,15 @@ factory_data.db
 *.swo
 *~
 
+# Test outputs
+markdown_output/
+
+# Logs
+*.log
+
 # OS
 .DS_Store
 Thumbs.db
-
-# Test outputs
-markdown_output/
-*.log
 
 # Secrets and private config
 .env
@@ -37,3 +40,7 @@ config.local.py
 # Private candidate strategy docs — never publish
 STUDY.md
 workspace/_config/project.local.md
+
+# Sensitive contract documents — real project files, do not publish
+*.pdf
+Change Order/
