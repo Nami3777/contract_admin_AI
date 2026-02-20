@@ -6,7 +6,7 @@
 [![Pydantic V2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://docs.pydantic.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Portfolio Demo:** [View Interactive Reconciliation Interface](index_final.html)
+> **Portfolio Demo:** [View Interactive Reconciliation Interface](index.html)
 
 ---
 
