@@ -31,7 +31,7 @@ This folder contains the primary case study presentation demonstrating how AI ca
 - Quantified outcomes with clear ROI
 
 **Technical Stack:**
-- PDF Processing: Docling + PyMuPDF
+- PDF Processing: PyMuPDF + Docling
 - AI: Ollama + Llama 3.2 (local inference)
 - Validation: Pydantic (schema enforcement)
 - Storage: SQLite (embedded database)
