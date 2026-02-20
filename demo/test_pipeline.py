@@ -1,8 +1,7 @@
 """
 Integration Test Suite for AI Document Processing Pipeline
 
-This file demonstrates production-level testing practices that hiring managers look for.
-Run this BEFORE your job interview to verify everything works.
+This file demonstrates production-level testing practices.
 """
 
 import subprocess
