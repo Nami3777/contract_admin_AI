@@ -1,6 +1,5 @@
 """
 Layer 2: LLM Extraction for Construction DWRs
-Translates extract_v2.py from Agile Robots to Construction domain.
 
 Uses Ollama + Llama 3.2 with Pydantic V2 structured output.
 Extracts labour, equipment, materials, and metadata from DWR markdown.
@@ -756,4 +755,5 @@ def main():
 
 if __name__ == "__main__":
     exit_code = main()
+
     exit(exit_code)
