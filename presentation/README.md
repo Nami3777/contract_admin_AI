@@ -1,4 +1,3 @@
-# Presentation
 
 ## Contract Administration AI - Case Study
 
