@@ -1,4 +1,3 @@
-
 ## Contract Administration AI - Case Study
 
 This folder contains the primary case study presentation demonstrating how AI can automate construction contract administration workflows.
