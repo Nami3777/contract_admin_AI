@@ -1,9 +1,17 @@
 """
-Layer 2: LLM Extraction for Construction DWRs
+Layer 2: LLM Extraction for Construction DWRs.
 
 Uses Ollama + Llama 3.2 with Pydantic V2 structured output.
 Extracts labour, equipment, materials, and metadata from DWR markdown.
 """
+import sys
+import io
+
+# Force UTF-8 encoding on Windows to handle emojis
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 
 import ollama
 import json
@@ -755,5 +763,4 @@ def main():
 
 if __name__ == "__main__":
     exit_code = main()
-
     exit(exit_code)
