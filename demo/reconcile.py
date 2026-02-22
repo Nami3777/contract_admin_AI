@@ -6,6 +6,14 @@ This is Layer 3 of the pipeline - deterministic comparison, no AI.
 
 Key principle: AI extracts the data, Python does the math.
 """
+import sys
+import io
+
+# Force UTF-8 encoding on Windows to handle emojis
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 
 import re
 from pathlib import Path
