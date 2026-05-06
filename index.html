@@ -321,6 +321,142 @@
             border: 1px solid rgba(0, 123, 255, 0.2);
         }
         
+        /* LIVE DEMO */
+        .demo-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .upload-zone {
+            background: #ffffff;
+            border: 2px dashed #cccccc;
+            border-radius: 4px;
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background 0.3s;
+            color: #333333;
+            position: relative;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #000000;
+            background: #f9f9f9;
+        }
+
+        .upload-zone.has-file {
+            border-color: #28a745;
+            border-style: solid;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-label {
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000000;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.85em;
+            color: #888888;
+            margin-top: 8px;
+        }
+
+        .upload-filename {
+            font-size: 0.85em;
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .analyze-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: inherit;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            background: #333333;
+        }
+
+        .analyze-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .demo-status {
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .demo-status.loading {
+            background: #f0f4ff;
+            color: #0044cc;
+            border: 1px solid #ccd9ff;
+            display: block;
+        }
+
+        .demo-status.error {
+            background: #fff0f0;
+            color: #cc0000;
+            border: 1px solid #ffcccc;
+            display: block;
+        }
+
+        .demo-results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .demo-results.visible {
+            display: block;
+        }
+
+        .result-summary-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .result-chip {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .chip-match { background: rgba(40,167,69,0.12); color: #28a745; }
+        .chip-flag  { background: rgba(204,0,0,0.10);  color: #cc0000; }
+        .chip-new   { background: rgba(0,123,255,0.10); color: #007bff; }
+        .chip-miss  { background: rgba(150,150,150,0.12); color: #666666; }
+        .chip-time  { background: rgba(0,0,0,0.05); color: #555555; }
+
         /* AUTHOR SECTION */
         .author-section {
             display: grid;
@@ -391,7 +527,8 @@
                 <a href="#problem">Problem</a>
                 <a href="#metrics">Metrics</a>
                 <a href="#pipeline">Pipeline</a>
-                <a href="#data">Data</a>
+                <a href="#demo" style="color:#ffffff; font-weight:700;">Live Demo</a>
+                <a href="#data">Examples</a>
             </nav>
         </div>
     </header>
@@ -477,7 +614,7 @@
                     graph LR
                         A["CA Report<br/>DWR-007"] -->|PDF Extraction| B["Data Standardization<br/>Pydantic V2"]
                         C["Contractor Report<br/>DWR-009"] -->|PDF Extraction| B
-                        B -->|LLM Orchestration| D["Variance Analysis<br/>Llama 3.2"]
+                        B -->|LLM Orchestration| D["Variance Analysis<br/>Claude AI"]
                         D -->|Threshold Check| E["Compliance Flagging<br/>±5% Variance"]
                         E -->|Final Output| F["Reconciliation Report<br/>CO-99"]
                 </div>
@@ -485,6 +622,63 @@
         </div>
     </section>
     
+    <!-- LIVE DEMO -->
+    <section id="demo">
+        <div class="container">
+            <div class="section-title">Live Demo — Upload Your DWR Pair</div>
+            <div class="white-card">
+                <p style="color:#555555; margin-bottom:28px; font-size:0.95em; line-height:1.7;">
+                    Upload a CA (Inspector) DWR and a Contractor DWR in PDF format.
+                    Claude AI extracts the data; Python handles the variance math.
+                    Results appear in ~10&ndash;20 seconds.
+                </p>
+
+                <div class="demo-upload-grid">
+                    <div class="upload-zone" id="zone-ca" onclick="document.getElementById('input-ca').click()">
+                        <input type="file" id="input-ca" accept=".pdf" onchange="handleFile('ca', this)">
+                        <div class="upload-label">CA / Inspector Report</div>
+                        <div style="font-size:2em; margin:12px 0;">📋</div>
+                        <div class="upload-hint">Click or drag PDF here</div>
+                        <div class="upload-filename" id="filename-ca"></div>
+                    </div>
+                    <div class="upload-zone" id="zone-con" onclick="document.getElementById('input-con').click()">
+                        <input type="file" id="input-con" accept=".pdf" onchange="handleFile('con', this)">
+                        <div class="upload-label">Contractor Report</div>
+                        <div style="font-size:2em; margin:12px 0;">📄</div>
+                        <div class="upload-hint">Click or drag PDF here</div>
+                        <div class="upload-filename" id="filename-con"></div>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()" disabled>
+                    Analyze Reports
+                </button>
+
+                <div class="demo-status" id="demo-status"></div>
+
+                <div class="demo-results" id="demo-results">
+                    <div class="result-summary-bar" id="result-summary"></div>
+                    <div class="table-container" style="padding:24px;">
+                        <table id="result-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>CA Value</th>
+                                    <th>Contractor Value</th>
+                                    <th>Variance</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="result-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- TECH STACK -->
     <section>
         <div class="container">
@@ -505,7 +699,7 @@
                         <rect x="2" y="16" width="20" height="4" rx="1" fill="#000000"/>
                     </svg>
                     <h3>LLM Orchestration</h3>
-                    <p>Ollama (local inference) with Llama 3.2 for structured data extraction. No cloud dependencies—all processing on-premises. 3-attempt retry with validation feedback for robustness.</p>
+                    <p>Claude AI (Anthropic API) for structured data extraction via tool use. Pydantic V2 schema enforced at the API boundary. 3-attempt retry with validation feedback for robustness.</p>
                 </div>
                 <div class="tech-card">
                     <svg class="tech-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -677,11 +871,109 @@
     <!-- FOOTER -->
     <footer style="padding: 40px; text-align: center; border-top: 1px solid #2a2a2a;">
         <p style="color: #666666; font-size: 0.9em; margin-bottom: 8px;">MTO Contract 2020-4091 — Automated DWR Reconciliation Portfolio</p>
-        <p style="color: #666666; font-size: 0.9em;">Built with Python, Pydantic V2, Ollama/Llama 3.2, and SQLite</p>
+        <p style="color: #666666; font-size: 0.9em;">Built with Python, FastAPI, Pydantic V2, Claude AI, and PyMuPDF</p>
         <p style="color: #555555; font-size: 0.8em; margin-top: 20px;">© 2025 Contract Administration Portfolio. All test data anonymized or synthetically generated.</p>
     </footer>
     
     <script>
+        // ---- Live Demo Logic ----
+        const files = { ca: null, con: null };
+
+        function handleFile(key, input) {
+            const file = input.files[0];
+            if (!file) return;
+            files[key] = file;
+            const zone = document.getElementById(`zone-${key}`);
+            const label = document.getElementById(`filename-${key}`);
+            zone.classList.add('has-file');
+            label.textContent = file.name;
+            updateAnalyzeBtn();
+        }
+
+        function updateAnalyzeBtn() {
+            document.getElementById('analyze-btn').disabled = !(files.ca && files.con);
+        }
+
+        // Drag-and-drop support
+        ['ca', 'con'].forEach(key => {
+            const zone = document.getElementById(`zone-${key}`);
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.pdf')) {
+                    files[key] = file;
+                    zone.classList.add('has-file');
+                    document.getElementById(`filename-${key}`).textContent = file.name;
+                    updateAnalyzeBtn();
+                }
+            });
+        });
+
+        async function runAnalysis() {
+            const btn = document.getElementById('analyze-btn');
+            const statusEl = document.getElementById('demo-status');
+            const resultsEl = document.getElementById('demo-results');
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing…';
+            resultsEl.classList.remove('visible');
+            statusEl.className = 'demo-status loading';
+            statusEl.textContent = 'Extracting data with Claude AI… (10–20 seconds)';
+
+            const form = new FormData();
+            form.append('ca_pdf', files.ca);
+            form.append('contractor_pdf', files.con);
+
+            try {
+                const res = await fetch('/api/reconcile', { method: 'POST', body: form });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || `HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                renderResults(data);
+                statusEl.className = 'demo-status';
+            } catch (err) {
+                statusEl.className = 'demo-status error';
+                statusEl.textContent = `Error: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Analyze Reports';
+            }
+        }
+
+        function renderResults(data) {
+            const s = data.summary;
+            document.getElementById('result-summary').innerHTML = `
+                <div class="result-chip chip-match">✅ ${s.matches} Matches</div>
+                <div class="result-chip chip-flag">🔴 ${s.flags} Flags</div>
+                <div class="result-chip chip-new">🆕 ${s.new} New</div>
+                <div class="result-chip chip-miss">❓ ${s.missing} Missing</div>
+                <div class="result-chip chip-time">⏱ ${data.processing_time_seconds}s</div>
+            `;
+
+            const statusClass = { MATCH: 'status-match', FLAG: 'status-flag', NEW: 'status-new', MISSING: 'status-match' };
+            const tbody = document.getElementById('result-tbody');
+            tbody.innerHTML = data.items.map(item => `
+                <tr>
+                    <td><span class="status-badge ${statusClass[item.status] || ''}">${item.status}</span></td>
+                    <td>${item.category}</td>
+                    <td>${item.description}</td>
+                    <td>${item.ca_value != null ? item.ca_value.toFixed(2) + ' ' + item.unit : '—'}</td>
+                    <td>${item.contractor_value != null ? item.contractor_value.toFixed(2) + ' ' + item.unit : '—'}</td>
+                    <td>${item.variance_pct != null ? item.variance_pct.toFixed(1) + '%' : '—'}</td>
+                    <td style="font-size:0.85em;color:#666">${item.notes || ''}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('demo-results').classList.add('visible');
+            document.getElementById('demo-results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ---- Mermaid initialization ----
         // Initialize Mermaid with Light Theme
         mermaid.initialize({ 
             startOnLoad: true,
