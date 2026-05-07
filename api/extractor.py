@@ -17,6 +17,9 @@ from pydantic import ValidationError
 sys.path.insert(0, str(Path(__file__).parent.parent / "demo"))
 from schemas import DWRReport
 
+# Module-level singleton — one HTTP connection pool shared across all requests
+_client = anthropic.AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+
 
 EXTRACTION_PROMPT = """You are a construction contract administration data extraction specialist.
 You will receive text from an Ontario MTO Daily Work Record (DWR) that was extracted from a PDF.
@@ -74,7 +77,6 @@ async def extract_dwr_with_claude(content: str, source_label: str = "") -> DWRRe
     Extract structured DWR data using Claude API tool use.
     Equivalent to extract_dwr_with_llm() but uses Anthropic instead of Ollama.
     """
-    client = anthropic.AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     schema = DWRReport.model_json_schema()
 
     max_retries = 3
@@ -82,9 +84,9 @@ async def extract_dwr_with_claude(content: str, source_label: str = "") -> DWRRe
 
     for attempt in range(max_retries):
         try:
-            response = await client.messages.create(
+            response = await _client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=8192,
+                max_tokens=4096,
                 system=EXTRACTION_PROMPT,
                 tools=[{
                     "name": "extract_dwr_data",

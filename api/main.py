@@ -28,12 +28,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static assets (CSS, images, etc.) if a static/ dir exists
 STATIC_DIR = Path(__file__).parent.parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 ROOT_HTML = Path(__file__).parent.parent / "index.html"
+
+MAX_PDF_BYTES = 5 * 1024 * 1024  # 5 MB per file
+
+
+def _validate_pdf(data: bytes, field_name: str) -> None:
+    if len(data) == 0:
+        raise HTTPException(status_code=400, detail=f"{field_name}: file is empty")
+    if len(data) > MAX_PDF_BYTES:
+        mb = len(data) / 1_048_576
+        raise HTTPException(
+            status_code=413,
+            detail=f"{field_name}: file too large ({mb:.1f} MB). Maximum is 5 MB."
+        )
+    # Verify PDF magic bytes (%PDF)
+    if not data[:4] == b"%PDF":
+        raise HTTPException(status_code=400, detail=f"{field_name}: not a valid PDF file")
 
 
 @app.get("/", include_in_schema=False)
@@ -49,25 +64,23 @@ async def reconcile(
     """
     Upload two DWR PDFs and receive a structured reconciliation report.
     Processing time: ~10–20 seconds (two concurrent Claude API calls).
+    Maximum file size: 5 MB per PDF.
     """
-    if ca_pdf.content_type not in ("application/pdf", "application/octet-stream"):
-        raise HTTPException(status_code=400, detail="ca_pdf must be a PDF file")
-    if contractor_pdf.content_type not in ("application/pdf", "application/octet-stream"):
-        raise HTTPException(status_code=400, detail="contractor_pdf must be a PDF file")
-
     ca_bytes = await ca_pdf.read()
     con_bytes = await contractor_pdf.read()
 
-    if len(ca_bytes) == 0 or len(con_bytes) == 0:
-        raise HTTPException(status_code=400, detail="Uploaded files must not be empty")
+    _validate_pdf(ca_bytes, "ca_pdf")
+    _validate_pdf(con_bytes, "contractor_pdf")
 
-    ca_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-    con_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+    ca_tmp = None
+    con_tmp = None
     try:
+        ca_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         ca_tmp.write(ca_bytes)
         ca_tmp.flush()
         ca_tmp.close()
 
+        con_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         con_tmp.write(con_bytes)
         con_tmp.flush()
         con_tmp.close()
@@ -75,19 +88,20 @@ async def reconcile(
         result = await run_pipeline(ca_tmp.name, con_tmp.name)
         return result
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        # Do not expose internal error details to the caller
+        raise HTTPException(status_code=500, detail="Processing failed. Please check your PDFs and try again.")
     finally:
-        try:
-            os.unlink(ca_tmp.name)
-        except FileNotFoundError:
-            pass
-        try:
-            os.unlink(con_tmp.name)
-        except FileNotFoundError:
-            pass
+        for tmp in (ca_tmp, con_tmp):
+            if tmp is not None:
+                try:
+                    os.unlink(tmp.name)
+                except (FileNotFoundError, AttributeError):
+                    pass
 
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "api_key_set": bool(os.environ.get("ANTHROPIC_API_KEY"))}
+    return {"status": "ok"}

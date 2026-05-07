@@ -29,7 +29,11 @@ Thumbs.db
 markdown_output/
 *.log
 
-# Secrets (if any added later)
+# Secrets and private config
 .env
 secrets.json
 config.local.py
+
+# Private candidate strategy docs — never publish
+STUDY.md
+workspace/_config/project.local.md
