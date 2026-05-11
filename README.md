@@ -68,21 +68,6 @@ contract_admin_AI/
 
 ---
 
-## Deploy (Render Free Tier)
-
-1. Fork/clone this repo and push to GitHub.
-2. Create a free account at [render.com](https://render.com).
-3. New → Web Service → connect your GitHub repo.
-4. Render auto-detects `render.yaml` — no manual config needed.
-5. Go to **Environment** → add secret: `ANTHROPIC_API_KEY = sk-ant-...`
-6. Deploy. Your public URL appears as `https://your-service.onrender.com`.
-
-**Cold start note:** Free tier services sleep after 15 minutes of inactivity. First request after sleep takes ~30 seconds. Acceptable for demo use.
-
-Update `index.html` line 9 (`Live Demo:`) with your Render URL after deploying.
-
----
-
 ## Run Locally
 
 ```bash
@@ -105,6 +90,8 @@ Open `http://localhost:8000` — the portfolio page with live upload demo loads.
 ---
 
 ## API
+
+> **Note:** The API is implemented but not currently deployed due to Claude API usage costs. See the demo video above to watch it running locally. To run it yourself, follow the local setup steps above.
 
 ### `POST /api/reconcile`
 
@@ -141,7 +128,7 @@ Constraints: max 5 MB per file, PDF only. Processing time ~10–20 seconds (two 
 
 ### `GET /health`
 
-Returns `{"status": "ok"}`. Used by Render for health checks.
+Returns `{"status": "ok"}`.
 
 ---
 
