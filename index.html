@@ -527,7 +527,7 @@
                 <a href="#problem">Problem</a>
                 <a href="#metrics">Metrics</a>
                 <a href="#pipeline">Pipeline</a>
-                <a href="#demo" style="color:#ffffff; font-weight:700;">Live Demo</a>
+                <a href="#demo" style="color:#ffffff; font-weight:700;">Demo</a>
                 <a href="#data">Examples</a>
             </nav>
         </div>
@@ -622,64 +622,44 @@
         </div>
     </section>
     
-    <!-- LIVE DEMO -->
+    <!-- DEMO VIDEO -->
     <section id="demo">
         <div class="container">
-            <div class="section-title">Live Demo — Upload Your DWR Pair</div>
+            <div class="section-title">Demo</div>
             <div class="white-card">
-                <p style="color:#555555; margin-bottom:16px; font-size:0.95em; line-height:1.7;">
-                    Upload a CA (Inspector) DWR and a Contractor DWR in PDF format.
-                    Claude AI extracts the data; Python handles the variance math.
-                    Results appear in ~10&ndash;20 seconds.
-                </p>
-                <p style="color:#555555; background:#0a0a0a; border:1px solid #2a2a2a; border-radius:6px; padding:12px 16px; margin-bottom:28px; font-size:0.82em; line-height:1.6;">
-                    <strong style="color:#888888;">Privacy notice:</strong>
-                    Uploaded files are processed in memory and immediately discarded. No document content is stored, logged, or retained after your results are returned.
-                    This is a public testing demo &mdash; do not upload documents containing sensitive personal or commercial information.
-                </p>
 
-                <div class="demo-upload-grid">
-                    <div class="upload-zone" id="zone-ca" onclick="document.getElementById('input-ca').click()">
-                        <input type="file" id="input-ca" accept=".pdf" onchange="handleFile('ca', this)">
-                        <div class="upload-label">CA / Inspector Report</div>
-                        <div style="font-size:2em; margin:12px 0;">📋</div>
-                        <div class="upload-hint">Click or drag PDF here</div>
-                        <div class="upload-filename" id="filename-ca"></div>
-                    </div>
-                    <div class="upload-zone" id="zone-con" onclick="document.getElementById('input-con').click()">
-                        <input type="file" id="input-con" accept=".pdf" onchange="handleFile('con', this)">
-                        <div class="upload-label">Contractor Report</div>
-                        <div style="font-size:2em; margin:12px 0;">📄</div>
-                        <div class="upload-hint">Click or drag PDF here</div>
-                        <div class="upload-filename" id="filename-con"></div>
-                    </div>
+                <!-- Video embed — replace src with your recorded demo URL -->
+                <div style="position:relative; width:100%; padding-top:56.25%; background:#0a0a0a; border:1px solid #2a2a2a; border-radius:8px; overflow:hidden; margin-bottom:24px;">
+                    <video
+                        id="demo-video"
+                        controls
+                        style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain;"
+                        poster=""
+                    >
+                        <!-- Replace the src below with your recorded demo file or video URL -->
+                        <source src="samples/demo.mp4" type="video/mp4">
+                        <p style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#555; font-size:0.9em; text-align:center;">
+                            Demo video coming soon.<br>See the README to run locally.
+                        </p>
+                    </video>
                 </div>
 
-                <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()" disabled>
-                    Analyze Reports
-                </button>
+                <p style="color:#555555; font-size:0.9em; line-height:1.7; margin-bottom:20px;">
+                    Two DWR PDFs in &rarr; structured reconciliation report out.
+                    Claude AI extracts labour, equipment, and material line items from each report.
+                    Pure Python compares them against the MTO ±5% threshold and flags discrepancies.
+                </p>
 
-                <div class="demo-status" id="demo-status"></div>
-
-                <div class="demo-results" id="demo-results">
-                    <div class="result-summary-bar" id="result-summary"></div>
-                    <div class="table-container" style="padding:24px;">
-                        <table id="result-table">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Category</th>
-                                    <th>Description</th>
-                                    <th>CA Value</th>
-                                    <th>Contractor Value</th>
-                                    <th>Variance</th>
-                                    <th>Notes</th>
-                                </tr>
-                            </thead>
-                            <tbody id="result-tbody"></tbody>
-                        </table>
-                    </div>
+                <!-- API availability note -->
+                <div style="background:#0a0a0a; border:1px solid #2a2a2a; border-left:3px solid #444444; border-radius:6px; padding:14px 18px; font-size:0.83em; color:#666666; line-height:1.7;">
+                    <strong style="color:#888888;">Live API note:</strong>
+                    A fully functional FastAPI endpoint (<code style="color:#aaaaaa;">POST /api/reconcile</code>) is implemented in the
+                    <a href="https://github.com/Nami3777/contract_admin_AI/tree/main/api" style="color:#aaaaaa;">api/</a> folder
+                    and can be deployed to any Python host (e.g. Render). It is not currently active to avoid ongoing API usage charges.
+                    To run it yourself: clone the repo, add an <code style="color:#aaaaaa;">ANTHROPIC_API_KEY</code>, and start with
+                    <code style="color:#aaaaaa;">uvicorn api.main:app --reload</code>.
                 </div>
+
             </div>
         </div>
     </section>
