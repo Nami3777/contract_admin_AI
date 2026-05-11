@@ -7,8 +7,6 @@
 [![Pydantic V2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://docs.pydantic.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Live Demo:** *(Render deployment URL — see Deploy section below)*
-
 ---
 
 [![Demo screenshot](assets/screenshot.png)](https://youtu.be/0F9RK8QCOik)
