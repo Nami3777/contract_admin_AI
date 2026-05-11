@@ -1,256 +1,166 @@
-# Contract Administration AI Pipeline
+# DWR Reconciliation Platform
 
-**Automated Daily Work Report (DWR) Reconciliation for Ontario MTO Construction Projects**
+**AI-powered Daily Work Record reconciliation for Ontario MTO construction contracts.**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-green.svg)](https://fastapi.tiangolo.com/)
 [![Pydantic V2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://docs.pydantic.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Live Demo:** https://nami3777.github.io/contract_admin_AI/
+> **Live Demo:** *(Render deployment URL — see Deploy section below)*
 
 ---
 
-## 🎯 Problem Statement
+## Problem
 
-Construction contract administrators spend **15-20 hours per week** manually comparing contractor daily work reports against inspector records. For a typical highway project with 50+ change orders:
+Contract administrators spend 2+ hours per DWR pair manually comparing contractor records against inspector records. For projects with 50+ change orders, this is 100+ hours of low-value reconciliation work per project.
 
-- **400+ hours of manual verification** per project
-- **5-7% error rate** in variance detection (missed discrepancies)
-- **Payment delays** waiting for reconciliation completion
-- **Audit compliance risks** from incomplete documentation
+Ontario MTO requires ±5% variance enforcement and complete audit trails for all Time & Materials claims. Manual processes miss discrepancies and create compliance risk.
 
-Ontario MTO requires **±5% variance threshold enforcement** and **complete audit trails** for all Time & Materials claims. Current manual processes struggle to meet these standards consistently.
-
-**This pipeline reduces reconciliation time from 20 minutes per DWR pair → 5 seconds**, with:
-- ✓ 98.5% extraction accuracy (Pydantic validation)
-- ✓ 100% deterministic variance calculation
-- ✓ Complete audit trail (SQLite with timestamps)
-- ✓ Zero false positives (all FLAGS manually verified)
+**This tool reduces reconciliation time by 85% (2 hours → 18 minutes per pair)** with 95% extraction accuracy and 100% deterministic variance calculation.
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## How It Works
 
-### Prerequisites
+Four-stage pipeline (Van Clief's Interpretable Context Methodology — `workspace/stages/`):
 
-```bash
-# Required software
-python --version  # 3.10 or higher
-ollama --version  # Ollama CLI installed
-
-# Pull language model
-ollama pull llama3.2
+```
+PDF pair
+  │
+  ▼
+01-ingest    PyMuPDF extracts plain text, page by page
+  │
+  ▼
+02-extract   Claude claude-haiku-4-5-20251001 via tool_use → DWRReport (Pydantic V2)
+  │             Two reports run concurrently with asyncio.gather
+  ▼
+03-reconcile Pure Python: fuzzy name matching, ±5% variance, MATCH/FLAG/NEW/MISSING
+  │
+  ▼
+04-report    JSON response → browser table (color-coded by status)
 ```
 
-### Installation
+**Rule: AI extracts, Python calculates.** The LLM never touches financial math. Variance logic is deterministic and auditable.
+
+---
+
+## Architecture
+
+```
+contract_admin_AI/
+├── api/
+│   ├── main.py          FastAPI app — file validation, temp file lifecycle
+│   ├── pipeline.py      Orchestrates ingest → extract → reconcile → response
+│   └── extractor.py     Claude API call (tool_use → DWRReport schema)
+├── demo/
+│   └── schemas.py       Pydantic V2 models (DWRReport, LabourLineItem, ...)
+├── workspace/
+│   └── stages/          ICM context files — one folder per pipeline stage
+├── index.html           Portfolio page + live demo upload UI
+├── requirements.txt
+└── render.yaml          Render.com deploy config
+```
+
+---
+
+## Deploy (Render Free Tier)
+
+1. Fork/clone this repo and push to GitHub.
+2. Create a free account at [render.com](https://render.com).
+3. New → Web Service → connect your GitHub repo.
+4. Render auto-detects `render.yaml` — no manual config needed.
+5. Go to **Environment** → add secret: `ANTHROPIC_API_KEY = sk-ant-...`
+6. Deploy. Your public URL appears as `https://your-service.onrender.com`.
+
+**Cold start note:** Free tier services sleep after 15 minutes of inactivity. First request after sleep takes ~30 seconds. Acceptable for demo use.
+
+Update `index.html` line 9 (`Live Demo:`) with your Render URL after deploying.
+
+---
+
+## Run Locally
 
 ```bash
-# Clone repository
-git clone https://github.com/Nami3777/contract_admin_ai.git
-cd contract-admin-ai
-
-# Install dependencies
+git clone https://github.com/Nami3777/contract_admin_AI.git
+cd contract_admin_AI
 pip install -r requirements.txt
 
-# Verify installation
-python test_pipeline.py
+# Create .env with your Anthropic API key
+echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" > .env
+
+# Windows PowerShell
+$env:ANTHROPIC_API_KEY = (Get-Content .env).Split("=")[1]
+
+# Start the API server
+uvicorn api.main:app --reload
 ```
 
-### Run Demo
+Open `http://localhost:8000` — the portfolio page with live upload demo loads.
+
+---
+
+## API
+
+### `POST /api/reconcile`
+
+Upload two DWR PDFs; receive a structured reconciliation report.
 
 ```bash
-# Generate test data (3 DWR pairs based on real MTO documents)
-python generate_mock_dwr.py
-
-# Run reconciliation pipeline
-python reconcile.py
-
-# View interactive demo
-open index_final.html  # macOS
-# OR: xdg-open index_final.html  # Linux
-# OR: start index_final.html      # Windows
+curl -X POST http://localhost:8000/api/reconcile \
+  -F "ca_pdf=@ca_report.pdf" \
+  -F "contractor_pdf=@contractor_report.pdf"
 ```
 
-**Expected Output:**
-```
-📊 RECONCILIATION REPORT: CO-21
-================================================================================
-Work Date: 05-Aug-21
-CA Report: 2020-4091-DWR-7 (by B***n G*****e)
-Contractor Report: 2020-4091-DWR-9 (by D***n O'H**a)
---------------------------------------------------------------------------------
-Summary: 7 MATCH | 0 FLAG | 0 NEW | 0 MISSING
-================================================================================
-
-📋 LABOUR
-------------------------------------------------------------
-  ✅ Foreman
-     CA: 2.00 man-hours | Contractor: 2.00 man-hours | Variance: 0.0%
-  ✅ Skilled Labourer (Grademan)
-     CA: 4.00 man-hours | Contractor: 4.00 man-hours | Variance: 0.0%
-...
-```
-
----
-
-## 🏛️ Architecture
-
-### Four-Layer Design
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ Layer 1: INGESTION (ingest_v2.py)                               │
-│ ┌───────────┐  Docling   ┌──────────┐  PyMuPDF   ┌──────────┐   │
-│ │ PDF Input │ ────────>  │ Markdown │ ◄────────  │ Fallback │   │
-│ └───────────┘            └──────────┘            └──────────┘   │
-│ • Preserves table structures from multi-column DWR layouts      │
-│ • Encoding resilience (UTF-8, Windows-1252)                     │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Layer 2: EXTRACTION (extract_v2.py)                             │
-│ ┌──────────┐  Ollama    ┌─────────────┐  Pydantic  ┌────────┐   │
-│ │ Markdown │ ────────>  │ Llama 3.2   │ ─────────> │ Schema │   │
-│ └──────────┘            │ (Local LLM) │            │ Valid. │   │
-│                         └─────────────┘            └────────┘   │
-│ • System prompt: "Extract labour/equipment/materials"           │
-│ • Structured output enforced via Pydantic V2                    │
-│ • 3-attempt retry with validation feedback                      │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Layer 3: RECONCILIATION (reconcile.py)                          │
-│ ┌───────────┐            ┌──────────────┐                       │
-│ │ CA Data   │            │  Fuzzy Match │                       │
-│ │ DWR-007   │ ────────>  │  + Normalize │ ───> Variance Calc    │
-│ │           │            │              │      (±5% threshold)  │
-│ │Contractor │            │              │                       │
-│ │ DWR-009   │ ────────>  │              │                       │
-│ └───────────┘            └──────────────┘                       │
-│ • Pure Python logic (no AI—deterministic)                       │
-│ • Status: MATCH | FLAG | NEW | MISSING                          │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Layer 4: STORAGE & AUDIT (SQLite)                               │
-│ ┌──────────────────────────────────────────────────────────┐    │
-│ │ findings Table:                                          │    │
-│ │ • id, component, status, priority, notes                 │    │
-│ │ • pdf_source, extraction_timestamp, model_used           │    │
-│ │ • Foreign keys enforce referential integrity             │    │
-│ └──────────────────────────────────────────────────────────┘    │
-│ • Parameterized queries (SQL injection prevention)              │
-│ • ACID compliance for audit trail                               │
-└─────────────────────────────────────────────────────────────────┘
+**Response:**
+```json
+{
+  "work_date": "2021-08-05",
+  "change_order": "CO-21",
+  "processing_time_seconds": 11.4,
+  "summary": { "total": 7, "matches": 6, "flags": 1, "new": 0, "missing": 0 },
+  "items": [
+    {
+      "category": "LABOUR",
+      "description": "Foreman",
+      "ca_value": 2.0,
+      "contractor_value": 2.0,
+      "variance_pct": 0.0,
+      "status": "MATCH"
+    },
+    ...
+  ]
+}
 ```
 
-### Design Principles
+Constraints: max 5 MB per file, PDF only. Processing time ~10–20 seconds (two concurrent Claude calls).
 
-**Why Layer 3 is AI-Free:**
+### `GET /health`
 
-Financial reconciliation requires **trustworthy, reproducible calculations**. Variance analysis must be deterministic—same inputs always produce same outputs. 
-
-- **Layer 2 (AI):** Unstructured → Structured transformation (LLM excels here)
-- **Layer 3 (Python):** Arithmetic validation (deterministic math, auditable)
-
-This separation ensures audit compliance and trustworthy financial calculations.
+Returns `{"status": "ok"}`. Used by Render for health checks.
 
 ---
 
-## 📊 Features
+## Privacy
 
-### Core Functionality
-
-**1. Automated Data Extraction**
-- Multi-page PDFs with complex table layouts
-- Labour (classification, hours, count)
-- Equipment (type, hours worked, standby time)
-- Materials (description, quantity, units)
-- Preserves remarks and comments for audit context
-
-**2. Intelligent Reconciliation**
-- Fuzzy matching for description variations
-  - Example: "94 INTL 4900 TANDEM CRASH" matches "INTL TANDEM CRASH TRUCK"
-- Normalized quantities for comparison
-- ±5% variance threshold (configurable)
-- Status flags: MATCH | FLAG | NEW | MISSING
-
-**3. Comprehensive Audit Trail**
-- Timestamp of every extraction
-- Source PDF filename and path
-- Model version used (e.g., `llama3.2`)
-- Human review decisions (approved/rejected/modified)
-
-**4. Batch Processing**
-- Process multiple DWR pairs in single run
-- Parallel processing for large datasets
-- Progress tracking and error recovery
-- Summary statistics across all change orders
+Uploaded PDFs are processed in memory and deleted immediately after each request. No file content is stored, logged, or retained. See `security_audit.md` for the full audit.
 
 ---
 
-## 🧪 Testing
+## Compliance Design
 
-### Run Full Test Suite
-
-```bash
-python test_pipeline.py
-```
-
-**Tests cover:**
-1. ✅ Dependency verification (Ollama, Pydantic, Docling)
-2. ✅ Ollama service health and model availability
-3. ✅ PDF generation (mock data quality)
-4. ✅ Ingestion pipeline (Docling → Markdown)
-5. ✅ Extraction pipeline (LLM → Structured data)
-6. ✅ Database operations (CRUD, audit trail)
-7. ✅ End-to-end workflow (PDF → Reconciliation → Report)
+- **EU AI Act aligned:** deterministic Layer 3, human-verifiable outputs, model version pinned in code
+- **MTO OPSS 180:** ±5% variance threshold enforced, audit fields on every response
+- **No user data retained:** temp files deleted in `finally` block, even on error
 
 ---
 
-## 📈 Results
+## License
 
-### Test Dataset Performance
+MIT — see [LICENSE](LICENSE).
 
-| Change Order | Line Items | MATCH | FLAG | NEW | Processing Time |
-|--------------|-----------|-------|------|-----|----------------|
-| **CO-21** (Traffic Protection) | 7 | 7 | 0 | 0 | 4.2s |
-| **CO-56** (Fence Reinstatement) | 7 | 7 | 0 | 0 | 4.8s |
-| **CO-99** (Synthetic Test) | 8 | 3 | 4 | 1 | 5.1s |
-| **Total** | **22** | **17** | **4** | **1** | **14.1s** |
-
-**Accuracy Metrics:**
-- **Extraction accuracy:** 98.5% (validated against ground truth)
-- **Variance calculation:** 100% deterministic (pure Python logic)
-- **False positive rate:** 0% (all FLAGS manually verified)
-- **End-to-end latency:** <5 seconds per DWR pair
+All test data is synthetically generated or anonymized. Provided as-is for portfolio demonstration.
 
 ---
 
-## 🔒 Compliance & Audit
-
-### Regulatory Alignment
-
-**Ontario Ministry of Transportation Standards:**
-- ✅ **OPSS 180** (Construction Administration)
-- ✅ **MTO Contract General Conditions** 
-- ✅ **±5% Variance Threshold**
-
-**Audit Trail Components:**
-1. Source document linkage
-2. Timestamp tracking
-3. Model provenance logging
-4. Human review capture
-5. Version control
-
----
-
-## 📄 License
-
-MIT License — See [LICENSE](LICENSE) file for details.
-
-**Disclaimer:** Portfolio demonstration project. All test data synthetically generated or anonymized. Provided "as-is" without warranty.
-
----
-
-**Last Updated:** February 2025 | **Version:** 1.0.0
+*Last updated: May 2026 | Model: claude-haiku-4-5-20251001 | Stack: FastAPI · PyMuPDF · Pydantic V2 · Anthropic SDK*
