@@ -17,19 +17,18 @@ This folder contains the primary case study presentation demonstrating how AI ca
 ### Key Highlights
 
 **Business Impact:**
-- 85% reduction in reconciliation time (2-4 hours → 15-30 minutes)
-- $52,500 annual savings for 10-CA organization
-- 8-month payback period
-- $227,000 five-year NPV
+- 85% reduction in reconciliation time (2 hours → 18 minutes per contract workflow)
+- 95% extraction accuracy
+- Pilot-ready prototype; not yet production-deployed
 
 **PM Approach:**
-- 2 years of field observation and user research
-- Strategic design trade-offs (local LLM vs cloud)
-- Governance-first architecture (multi-layer validation)
-- Quantified outcomes with clear ROI
+- Field observation and user research with 10+ construction project managers
+- Strategic design trade-offs (local LLM vs cloud; AI extraction vs deterministic reconciliation)
+- Governance-first architecture (human review path, no automated financial decisions)
+- Quantified outcomes with realistic scope framing
 
 **Technical Stack:**
-- PDF Processing: PyMuPDF + Docling
-- AI: Ollama + Llama 3.2 (local inference)
-- Validation: Pydantic (schema enforcement)
-- Storage: SQLite (embedded database)
+- PDF Processing: PyMuPDF
+- AI: Claude Haiku (Anthropic API, via tool_use)
+- Validation: Pydantic V2 (schema enforcement)
+- API: FastAPI (REST, async)
