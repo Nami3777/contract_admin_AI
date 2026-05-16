@@ -183,26 +183,6 @@ Constraints: max 5 MB per file, PDF only. Processing time ~10–20 seconds (two 
 
 ---
 
-## AI Builder Proof Bundle
-
-This project includes an AI workflow-builder proof bundle for roles focused on AI orchestration, evals, human-in-the-loop systems, and product analytics.
-
-- **n8n workflow:** AI extraction output → deterministic reconciliation → human review routing.
-- **Eval plan:** schema validity, extraction accuracy, missing fields, hallucination checks, latency, and human-review triggers.
-- **PostHog metrics plan:** events, funnels, drop-off analysis, review behavior, and pilot success metrics.
-- **Builder stack narrative:** Cursor, n8n, Vercel, PostHog, Claude, FastAPI, and Pydantic mapped to product-builder signals.
-- **Proof bundle audit:** n8n readiness score, remaining gaps, and callback-readiness assessment.
-
-Proof docs:
-
-- [`docs/n8n_workflow.md`](docs/n8n_workflow.md)
-- [`docs/evals.md`](docs/evals.md)
-- [`docs/posthog_metrics_plan.md`](docs/posthog_metrics_plan.md)
-- [`docs/builder_stack.md`](docs/builder_stack.md)
-- [`docs/proof_bundle_audit.md`](docs/proof_bundle_audit.md)
-
----
-
 ## Validation and Limitations
 
 I validated the problem through field experience, analysis of DWR reconciliation patterns, and user research with 10+ construction project managers. The current prototype was tested against sample and anonymized DWR-style documents and reconciliation scenarios.
