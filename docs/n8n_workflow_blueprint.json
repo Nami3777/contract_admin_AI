@@ -1,0 +1,17 @@
+{
+  "name": "Contract Admin AI: Extract -> Reconcile -> Human Review",
+  "note": "Blueprint/reference for n8n Cloud. If import fails due to n8n version differences, rebuild manually using docs/n8n_workflow.md.",
+  "fixture": {
+    "ca_items": [
+      { "category": "Labour", "description": "Foreman", "value": 2.0, "unit": "man-hours" },
+      { "category": "Labour", "description": "Skilled Labourer", "value": 8.0, "unit": "man-hours" },
+      { "category": "Equipment", "description": "Backhoe", "value": 4.0, "unit": "hours" }
+    ],
+    "contractor_items": [
+      { "category": "Labour", "description": "Foreman", "value": 2.0, "unit": "man-hours" },
+      { "category": "Labour", "description": "Skilled Labourer", "value": 10.0, "unit": "man-hours" },
+      { "category": "Material", "description": "Cold Patch", "value": 1.0, "unit": "tonne" }
+    ]
+  },
+  "variance_code_node": "const caItems = $json.fixture.ca_items;\\nconst contractorItems = $json.fixture.contractor_items;\\nconst key = item => `${item.category}:${item.description}`.toLowerCase();\\nconst caMap = Object.fromEntries(caItems.map(item => [key(item), item]));\\nconst conMap = Object.fromEntries(contractorItems.map(item => [key(item), item]));\\nconst keys = Array.from(new Set([...Object.keys(caMap), ...Object.keys(conMap)]));\\nconst items = keys.map(k => {\\n  const ca = caMap[k];\\n  const con = conMap[k];\\n  if (ca && con) {\\n    const variance = ca.value === 0 ? 100 : Math.abs(con.value - ca.value) / ca.value * 100;\\n    const status = variance > 5 ? 'FLAG' : 'MATCH';\\n    return { category: ca.category, description: ca.description, ca_value: ca.value, contractor_value: con.value, unit: ca.unit, variance_pct: Number(variance.toFixed(1)), status, review_required: status !== 'MATCH' };\\n  }\\n  if (ca) return { category: ca.category, description: ca.description, ca_value: ca.value, contractor_value: null, unit: ca.unit, variance_pct: null, status: 'MISSING', review_required: true };\\n  return { category: con.category, description: con.description, ca_value: null, contractor_value: con.value, unit: con.unit, variance_pct: null, status: 'NEW', review_required: true };\\n});\\nreturn [{ json: { items, summary: { total: items.length, review_required: items.filter(i => i.review_required).length } } }];"
+}
