@@ -23,7 +23,9 @@ AI-powered workflow tool for construction contract administration. The system co
 | [`case_study/`](case_study/) | PDF case study + screenshot |
 | [`api/`](api/) | FastAPI app — ingestion, extraction, reconciliation |
 | [`demo/`](demo/) | Standalone demo scripts and mock data generator |
+| [`frontend/`](frontend/) | Portfolio page + live demo upload UI |
 | [`docs/`](docs/) | Evals, security audit, solution design, user research |
+| [`config/`](config/) | requirements.txt, .env.example, Procfile |
 
 ---
 
@@ -133,14 +135,33 @@ contract_admin_AI/
 ├── api/
 │   ├── main.py          FastAPI app — file validation, temp file lifecycle
 │   ├── pipeline.py      Orchestrates ingest → extract → reconcile → response
-│   └── extractor.py     Claude API call (tool_use → DWRReport schema)
+│   └── extractor.py     Claude Haiku via tool_use → DWRReport (Pydantic V2)
 ├── demo/
-│   └── schemas.py       Pydantic V2 models (DWRReport, LabourLineItem, ...)
-├── workspace/
-│   └── stages/          Context files — one folder per pipeline stage
-├── index.html           Portfolio page + live demo upload UI
-├── requirements.txt
-└── render.yaml          Render.com deploy config
+│   ├── schemas.py       Pydantic V2 models (DWRReport, LabourLineItem, ...)
+│   ├── extract.py       Local LLM extraction (Ollama prototype)
+│   ├── reconcile.py     Standalone reconciliation logic
+│   └── generate_mock_dwr.py  Mock DWR pair generator for local testing
+├── frontend/
+│   └── index.html       Portfolio page + live demo upload UI
+├── case_study/
+│   ├── README.md        Case study overview
+│   ├── ContractAdminAIProductCaseStudy_2026-05-21.pdf
+│   └── contractAI_20260522.png
+├── docs/
+│   ├── evals.md         Extraction accuracy and reconciliation results
+│   ├── security_audit.md
+│   ├── Solution_Design.md
+│   ├── User_Research.md
+│   └── AI_Governance.md
+├── assets/
+│   └── screenshot.png
+├── tests/
+├── config/
+│   ├── requirements.txt
+│   ├── .env.example
+│   └── Procfile
+├── render.yaml          Render.com deploy config (must be at root)
+└── LICENSE
 ```
 
 ---
@@ -150,7 +171,7 @@ contract_admin_AI/
 ```bash
 git clone https://github.com/Nami3777/contract_admin_AI.git
 cd contract_admin_AI
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 
 # Add your Anthropic API key to .env
 echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" > .env

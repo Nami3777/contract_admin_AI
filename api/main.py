@@ -32,7 +32,7 @@ STATIC_DIR = Path(__file__).parent.parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-ROOT_HTML = Path(__file__).parent.parent / "index.html"
+ROOT_HTML = Path(__file__).parent.parent / "frontend" / "index.html"
 
 MAX_PDF_BYTES = 5 * 1024 * 1024  # 5 MB per file
 
