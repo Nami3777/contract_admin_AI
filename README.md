@@ -15,6 +15,18 @@ AI-powered workflow tool for construction contract administration. The system co
 
 ---
 
+## Repo Guide
+
+| Where to start | What you'll find |
+|---|---|
+| This README | Problem, decisions, architecture, results |
+| [`case_study/`](case_study/) | PDF case study + screenshot |
+| [`api/`](api/) | FastAPI app — ingestion, extraction, reconciliation |
+| [`demo/`](demo/) | Standalone demo scripts and mock data generator |
+| [`docs/`](docs/) | Evals, security audit, solution design, user research |
+
+---
+
 ## Project Context
 
 | Item | Details |
