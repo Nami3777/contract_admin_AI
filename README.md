@@ -9,7 +9,6 @@ AI-powered workflow tool for construction contract administration. The system co
 
 ---
 
-▶ [Watch demo on YouTube](https://youtu.be/0F9RK8QCOik)
 
 ![Reconciliation demo UI](assets/screenshot.png)
 
