@@ -255,3 +255,7 @@ All test data is synthetically generated or anonymized. Provided as-is for portf
 ---
 
 *Last updated: May 2026 | Model: claude-haiku-4-5-20251001 | Stack: FastAPI · PyMuPDF · Pydantic V2 · Anthropic SDK*
+
+---
+
+**Also in this repo:** [OpsTrace Proof Bundle](ops_trace_proof_bundle/) - operations traceability layer for compliance-heavy workflows (static MVP, anonymized fixture records).

@@ -1,0 +1,284 @@
+{
+  "project": {
+    "name": "OpsTrace MVP",
+    "audience": "Manufacturing Operations / Production Digitalization",
+    "source_case": "Anonymized regulated field-document workflow",
+    "review_date": "2026-06-02",
+    "claim_boundary": "Manual/anonymized fixture records derived from real document patterns; no private document text or production ERP integration."
+  },
+  "document_register": [
+    {
+      "document_id": "DOC-001",
+      "document_type": "CA_DWR",
+      "source_folder": "DWR Detail Reports",
+      "document_date": "2021-07-07",
+      "reference_id": "CHG-A",
+      "discipline": "Civil / Field Work",
+      "status": "recorded",
+      "linked_work_package": "WP-CHANGE-A",
+      "sensitivity_redacted": true,
+      "summary": "Inspector-side daily work record for change-order-related work.",
+      "quantity_value": 120,
+      "quantity_unit": "units",
+      "activity_code": "FIELD-ACTIVITY-CO08"
+    },
+    {
+      "document_id": "DOC-002",
+      "document_type": "CONTRACTOR_DWR",
+      "source_folder": "DWR Detail Reports",
+      "document_date": "2021-06-07",
+      "reference_id": "CHG-A",
+      "discipline": "Civil / Field Work",
+      "status": "recorded",
+      "linked_work_package": "WP-CHANGE-A",
+      "sensitivity_redacted": true,
+      "summary": "Contractor-side daily work record for the same change-order-related work.",
+      "quantity_value": 155,
+      "quantity_unit": "units",
+      "activity_code": "FIELD-ACTIVITY-CO08"
+    },
+    {
+      "document_id": "DOC-003",
+      "document_type": "CHANGE_ORDER",
+      "source_folder": "Change Order Detail Reports",
+      "document_date": "2021-07-12",
+      "reference_id": "CHG-A",
+      "discipline": "Commercial / Contract Change",
+      "status": "recorded",
+      "linked_work_package": "WP-CHANGE-A",
+      "sensitivity_redacted": true,
+      "summary": "Formal change record linked to the disputed work package."
+    },
+    {
+      "document_id": "DOC-004",
+      "document_type": "INSTRUCTION_NOTICE",
+      "source_folder": "Instruction Notice",
+      "document_date": "2021-05-03",
+      "reference_id": "INST-A",
+      "discipline": "Schedule / Project Controls",
+      "status": "issued",
+      "linked_work_package": "WP-INSTRUCTION-A",
+      "sensitivity_redacted": true,
+      "summary": "Instruction requiring schedule revision review and follow-up evidence."
+    },
+    {
+      "document_id": "DOC-005",
+      "document_type": "INFORMATION_REQUEST",
+      "source_folder": "Information Request",
+      "document_date": "2021-06-21",
+      "reference_id": "CLAR-A",
+      "discipline": "Traffic / Clarification",
+      "status": "closed",
+      "linked_work_package": "WP-TRAFFIC-MARKING",
+      "sensitivity_redacted": true,
+      "summary": "Clarification request for temporary pavement markings."
+    },
+    {
+      "document_id": "DOC-006",
+      "document_type": "CONTRACT_MEMO",
+      "source_folder": "Information Request",
+      "document_date": "2021-06-24",
+      "reference_id": "CLAR-A",
+      "discipline": "Traffic / Clarification",
+      "status": "recorded",
+      "linked_work_package": "WP-TRAFFIC-MARKING",
+      "sensitivity_redacted": true,
+      "summary": "Formal response memo linked to the clarification request."
+    },
+    {
+      "document_id": "DOC-007",
+      "document_type": "CERTIFICATE",
+      "source_folder": "Electrical / Compliance Certifications",
+      "document_date": "2021-12-01",
+      "reference_id": "CERT-A",
+      "discipline": "Electrical / Compliance Evidence",
+      "status": "accepted",
+      "linked_work_package": "WP-ELECTRICAL",
+      "sensitivity_redacted": true,
+      "summary": "Acceptance certificate for electrical work."
+    },
+    {
+      "document_id": "DOC-008",
+      "document_type": "CALIBRATION_CERTIFICATE",
+      "source_folder": "Grading and Drainage / Nuclear Gauge Submissions",
+      "document_date": "2021-02-24",
+      "reference_id": "CAL-A",
+      "discipline": "Grading / Compliance Evidence",
+      "status": "expired",
+      "linked_work_package": "WP-GRADING-QC",
+      "sensitivity_redacted": true,
+      "summary": "Calibration evidence for a measurement device used in quality verification.",
+      "expires_on": "2022-02-24"
+    },
+    {
+      "document_id": "DOC-009",
+      "document_type": "INCIDENT_NOTIFICATION",
+      "source_folder": "Incident Notification",
+      "document_date": "2021-08-10",
+      "reference_id": "INC-A",
+      "discipline": "Safety / Operational Exception",
+      "status": "recorded",
+      "linked_work_package": "WP-SAFETY-EXCEPTION",
+      "sensitivity_redacted": true,
+      "summary": "Incident record requiring reviewable follow-up status."
+    },
+    {
+      "document_id": "DOC-010",
+      "document_type": "FORM_B_SUMMARY",
+      "source_folder": "Summary of Form B",
+      "document_date": "2021-06-17",
+      "reference_id": "FORMB-001",
+      "discipline": "Commercial / Quantity Support",
+      "status": "recorded",
+      "linked_work_package": "WP-QUANTITY-SUPPORT",
+      "sensitivity_redacted": true,
+      "summary": "Quantity/completion support record."
+    },
+    {
+      "document_id": "DOC-011",
+      "document_type": "CA_DWR",
+      "source_folder": "DWR Detail Reports",
+      "document_date": "2021-06-17",
+      "reference_id": "FORMB-001",
+      "discipline": "Commercial / Quantity Support",
+      "status": "recorded",
+      "linked_work_package": "WP-QUANTITY-SUPPORT",
+      "sensitivity_redacted": true,
+      "summary": "Daily work record supporting the Form B quantity package.",
+      "quantity_value": 40,
+      "quantity_unit": "units",
+      "activity_code": "FIELD-ACTIVITY-FORMB"
+    },
+    {
+      "document_id": "DOC-012",
+      "document_type": "CONTRACTOR_DWR",
+      "source_folder": "DWR Detail Reports",
+      "document_date": "2021-06-17",
+      "reference_id": "FORMB-001",
+      "discipline": "Commercial / Quantity Support",
+      "status": "recorded",
+      "linked_work_package": "WP-QUANTITY-SUPPORT",
+      "sensitivity_redacted": true,
+      "summary": "Matching contractor work record supporting the Form B quantity package.",
+      "quantity_value": 41,
+      "quantity_unit": "units",
+      "activity_code": "FIELD-ACTIVITY-FORMB"
+    }
+  ],
+  "evidence_links": [
+    {
+      "source_document_id": "DOC-001",
+      "target_document_id": "DOC-002",
+      "link_type": "CA_TO_CONTRACTOR_DWR_PAIR",
+      "confidence": 0.96,
+      "review_required": true
+    },
+    {
+      "source_document_id": "DOC-001",
+      "target_document_id": "DOC-003",
+      "link_type": "DWR_SUPPORTS_CHANGE_ORDER",
+      "confidence": 0.91,
+      "review_required": true
+    },
+    {
+      "source_document_id": "DOC-005",
+      "target_document_id": "DOC-006",
+      "link_type": "IR_HAS_RESPONSE",
+      "confidence": 0.98,
+      "review_required": false
+    },
+    {
+      "source_document_id": "DOC-010",
+      "target_document_id": "DOC-011",
+      "link_type": "FORM_B_SUPPORTED_BY_DWR",
+      "confidence": 0.88,
+      "review_required": false
+    },
+    {
+      "source_document_id": "DOC-011",
+      "target_document_id": "DOC-012",
+      "link_type": "CA_TO_CONTRACTOR_DWR_PAIR",
+      "confidence": 0.95,
+      "review_required": false
+    }
+  ],
+  "manual_expected_exceptions": [
+    {
+      "exception_id": "EX-001",
+      "source_document_id": "DOC-001",
+      "exception_type": "DWR_DISCREPANCY",
+      "severity": "High",
+      "evidence_gap": "CA and contractor DWRs are linked to the same work package but differ by date and quantity beyond tolerance.",
+      "owner": "Human reviewer",
+      "review_status": "Open",
+      "created_date": "2026-06-02",
+      "resolved_date": null
+    },
+    {
+      "exception_id": "EX-002",
+      "source_document_id": "DOC-004",
+      "exception_type": "MISSING_FOLLOW_UP_EVIDENCE",
+      "severity": "Medium",
+      "evidence_gap": "Instruction Notice is issued but no linked follow-up evidence is present in the fixture.",
+      "owner": "Human reviewer",
+      "review_status": "Open",
+      "created_date": "2026-06-02",
+      "resolved_date": null
+    },
+    {
+      "exception_id": "EX-003",
+      "source_document_id": "DOC-008",
+      "exception_type": "EXPIRED_CERTIFICATE",
+      "severity": "High",
+      "evidence_gap": "Calibration certificate expiry date is earlier than the review date.",
+      "owner": "Human reviewer",
+      "review_status": "Open",
+      "created_date": "2026-06-02",
+      "resolved_date": null
+    }
+  ],
+  "manufacturing_mapping": [
+    {
+      "source_document_type": "DWR",
+      "ops_trace_role": "Work execution record",
+      "manufacturing_equivalent": "Production traveler / station work record",
+      "example_use": "Compare operator record and supervisor/system record before release."
+    },
+    {
+      "source_document_type": "CA Diary",
+      "ops_trace_role": "Daily operational context",
+      "manufacturing_equivalent": "Supervisor shift log",
+      "example_use": "Capture blockers, staffing changes, rework notes, and unresolved issues."
+    },
+    {
+      "source_document_type": "Change Order",
+      "ops_trace_role": "Formal change trigger",
+      "manufacturing_equivalent": "Engineering change / rework order",
+      "example_use": "Link changed work to supporting evidence and approval status."
+    },
+    {
+      "source_document_type": "Information Request",
+      "ops_trace_role": "Clarification workflow",
+      "manufacturing_equivalent": "Technical clarification request",
+      "example_use": "Track unclear requirements before production continues."
+    },
+    {
+      "source_document_type": "Instruction Notice",
+      "ops_trace_role": "Formal instruction requiring closure evidence",
+      "manufacturing_equivalent": "Work instruction update",
+      "example_use": "Ensure new instructions are linked to execution evidence."
+    },
+    {
+      "source_document_type": "Certificate / Calibration",
+      "ops_trace_role": "Compliance evidence",
+      "manufacturing_equivalent": "Quality acceptance / calibration record",
+      "example_use": "Flag expired or missing evidence before final acceptance."
+    },
+    {
+      "source_document_type": "Incident Notification",
+      "ops_trace_role": "Operational exception",
+      "manufacturing_equivalent": "Nonconformance / safety event",
+      "example_use": "Route incident follow-up to human review and closure tracking."
+    }
+  ]
+}

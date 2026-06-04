@@ -1,0 +1,1350 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpsTrace - Operations Traceability Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f1efe4;
+      --bg-soft: #f8f6ed;
+      --panel: #fffdf6;
+      --panel-soft: #f4f1e8;
+      --ink: #2e2e2c;
+      --muted: #69665f;
+      --line: #ddd8ca;
+      --line-strong: #c9c1b0;
+      --navy: #242426;
+      --teal: #2c8b84;
+      --teal-dark: #1f6464;
+      --coral: #ff735d;
+      --blue: #596c96;
+      --amber: #a66a19;
+      --red: #a84235;
+      --green: #357a54;
+      --purple: #7a669a;
+      --shadow: 0 20px 48px rgba(46, 46, 44, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 92px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      line-height: 1.45;
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 26px 22px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 22px;
+      color: var(--ink);
+      background: rgba(241, 239, 228, .92);
+      border: 1px solid rgba(46,46,44,.08);
+      border-top: 0;
+      border-radius: 0 0 22px 22px;
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 850;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      border: 3px solid var(--coral);
+      box-shadow: inset 0 0 0 5px var(--bg), inset 0 0 0 8px var(--coral);
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-weight: 700;
+      color: #3a3935;
+    }
+
+    .topnav a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topnav .nav-cta {
+      background: #2f2d2b;
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: 14px;
+      box-shadow: 0 14px 30px rgba(46,46,44,.18);
+    }
+
+    .landing {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 70px 42px 72px;
+      background:
+        radial-gradient(circle at 14% 24%, rgba(255, 115, 93, 0.10), transparent 24%),
+        radial-gradient(circle at 88% 78%, rgba(44, 139, 132, 0.10), transparent 26%),
+        var(--bg);
+    }
+
+    .hero {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, .8fr);
+      align-items: center;
+      gap: 46px;
+    }
+
+    .hero-copy {
+      text-align: left;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(46,46,44,.13);
+      border-radius: 999px;
+      color: var(--teal-dark);
+      background: rgba(255,253,246,.58);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+      background: currentColor;
+    }
+
+    h1 {
+      margin: 24px 0 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(62px, 8vw, 126px);
+      font-weight: 500;
+      line-height: .92;
+      letter-spacing: -0.055em;
+      max-width: 870px;
+      color: var(--ink);
+    }
+
+    .accent-word {
+      color: var(--coral);
+      font-style: italic;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: #3f3d38;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .boundary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .boundary-card {
+      background: rgba(255,253,246,.68);
+      border: 1px solid rgba(46,46,44,.10);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .boundary-card strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .boundary-card span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-weight: 850;
+      color: #fff;
+      background: #2f2d2b;
+      text-decoration: none;
+      box-shadow: 0 16px 32px rgba(46,46,44,.18);
+    }
+
+    .hero-link {
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration: none;
+      background: rgba(255,253,246,.58);
+      border-radius: 14px;
+      padding: 14px 18px;
+    }
+
+    .hero-preview {
+      position: relative;
+    }
+
+    .preview-frame {
+      border-radius: 28px;
+      padding: 18px;
+      background:
+        linear-gradient(145deg, rgba(44,139,132,.22), rgba(255,115,93,.12)),
+        #e7e2d4;
+      box-shadow: var(--shadow);
+    }
+
+    .preview-card {
+      min-height: 520px;
+      border-radius: 22px;
+      padding: 24px;
+      background: rgba(255,253,246,.88);
+      border: 1px solid rgba(46,46,44,.08);
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-metric {
+      border-radius: 16px;
+      background: #f7f3e8;
+      border: 1px solid rgba(46,46,44,.08);
+      padding: 14px;
+    }
+
+    .mini-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .07em;
+    }
+
+    .mini-metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .preview-chain {
+      border-radius: 18px;
+      padding: 16px;
+      background: #302f2c;
+      color: #fff;
+    }
+
+    .preview-chain h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .preview-line {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,.12);
+      font-size: 13px;
+    }
+
+    .preview-line:first-of-type {
+      border-top: 0;
+    }
+
+    .preview-line span {
+      color: #ffd2c9;
+      font-weight: 850;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .dashboard-kicker {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 22px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .dashboard-kicker h2 {
+      font-size: clamp(34px, 5vw, 72px);
+      line-height: .98;
+      letter-spacing: -0.05em;
+      max-width: 760px;
+    }
+
+    .dashboard-kicker p {
+      max-width: 420px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 72px;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: minmax(220px, 1.1fr) repeat(3, minmax(150px, .42fr)) auto;
+      gap: 10px;
+      background: rgba(241, 239, 228, .90);
+      backdrop-filter: blur(10px);
+      padding: 16px 0 12px;
+      margin-bottom: 10px;
+    }
+
+    .control {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 13px;
+      color: var(--ink);
+      min-width: 0;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #2f2d2b;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metrics {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin: 12px 0 14px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(46,46,44,.05);
+      cursor: pointer;
+      min-height: 112px;
+    }
+
+    .metric.active {
+      outline: 3px solid rgba(44, 139, 132, .16);
+      border-color: var(--teal);
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-weight: 800;
+    }
+
+    .metric .value {
+      margin: 8px 0 4px;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 850;
+      letter-spacing: -.03em;
+    }
+
+    .metric .context {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .main-layout {
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .8fr);
+      align-items: start;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 28px rgba(46,46,44,.05);
+      margin-bottom: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.01em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .high { color: #8f332a; background: #fae3df; }
+    .medium { color: #80540f; background: #f8ebcf; }
+    .open { color: #8f4a21; background: #f8e2d2; }
+    .clean { color: #2d6f4e; background: #dfeee4; }
+    .review { color: #3f527c; background: #e4e8f2; }
+    .soft { color: #4a4842; background: #efebe0; }
+
+    .logic-chain {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .logic-step {
+      position: relative;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 100px;
+    }
+
+    .logic-step:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      border-top: 2px solid var(--line-strong);
+    }
+
+    .logic-step:last-child:after { display: none; }
+
+    .logic-step .num {
+      width: 24px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #2f2d2b;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 8px;
+    }
+
+    .logic-step strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .logic-step span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 34px;
+      align-items: center;
+      gap: 9px;
+      margin: 9px 0;
+      font-size: 13px;
+    }
+
+    .track {
+      height: 12px;
+      background: #ece7db;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--teal);
+    }
+
+    .fill.red { background: var(--red); }
+    .fill.amber { background: var(--amber); }
+    .fill.blue { background: var(--blue); }
+    .fill.green { background: var(--green); }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .health-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--panel-soft);
+      cursor: pointer;
+    }
+
+    .health-card.active {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
+    }
+
+    .health-card strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .health-card .mini {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exception-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: var(--panel);
+      cursor: pointer;
+    }
+
+    .exception-card.active {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
+    }
+
+    .exception-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .exception-title {
+      font-weight: 850;
+      font-size: 14px;
+    }
+
+    .exception-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .evidence-gap {
+      color: #344054;
+      font-size: 13px;
+      margin: 8px 0 10px;
+    }
+
+    .detail-panel {
+      background: #2f2d2b;
+      color: #f8fafc;
+      border-color: #2f2d2b;
+    }
+
+    .detail-panel .subtitle,
+    .detail-panel .muted {
+      color: #cbd5e1;
+    }
+
+    .chain-view {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chain-node {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      align-items: start;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .chain-node .node-type {
+      color: #a7f3d0;
+      font-weight: 850;
+      font-size: 12px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .check-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--panel-soft);
+    }
+
+    .check-card strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .check-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #475467;
+      background: #f1ede2;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tr.highlight td {
+      background: #fff1e8;
+      border-bottom-color: #e7c2ad;
+    }
+
+    tr.highlight td:first-child {
+      box-shadow: inset 4px 0 0 var(--coral);
+    }
+
+    .table-note {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      margin: -4px 0 12px;
+    }
+
+    .review-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--coral);
+      box-shadow: 0 0 0 4px rgba(255, 115, 93, .12);
+    }
+
+    .mapping-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(150px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .map-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--panel-soft);
+      min-height: 152px;
+    }
+
+    .map-card .source {
+      color: var(--teal);
+      font-weight: 850;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .map-card .equiv {
+      font-weight: 750;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .map-card .use {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .risk-table td:first-child {
+      font-weight: 800;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+
+    footer {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 22px 30px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .muted { color: var(--muted); }
+    .red { color: var(--red); }
+    .green { color: var(--green); }
+    .amber { color: var(--amber); }
+
+    @media (max-width: 1120px) {
+      .toolbar,
+      .metrics,
+      .main-layout,
+      .logic-chain,
+      .check-grid,
+      .boundary-strip,
+      .hero,
+      .dashboard-kicker {
+        grid-template-columns: 1fr;
+      }
+      .logic-step:after { display: none; }
+      .health-grid { grid-template-columns: 1fr; }
+      .topbar {
+        padding: 16px 22px;
+      }
+      .topnav {
+        gap: 14px;
+      }
+      .hero-preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell { padding: 12px; }
+      .landing { padding: 92px 18px 44px; }
+      .topnav a:not(.nav-cta) { display: none; }
+      .brand { font-size: 18px; }
+      h1 { font-size: clamp(52px, 17vw, 84px); }
+      .hero p { font-size: 16px; }
+      section { padding: 13px; }
+      table { font-size: 12px; }
+      .section-head { display: block; }
+      .toolbar { position: static; }
+      .dashboard-kicker {
+        display: block;
+        padding: 18px 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar" aria-label="OpsTrace navigation">
+    <div class="brand"><span class="mark" aria-hidden="true"></span> OpsTrace</div>
+    <div class="topnav">
+      <a href="#model">Model</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#evidence">Evidence</a>
+      <a class="nav-cta" href="#dashboard">Open demo -></a>
+    </div>
+  </nav>
+
+  <main class="landing">
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span> Operations traceability MVP</div>
+        <h1>make scattered records <span class="accent-word">reviewable</span></h1>
+        <p>OpsTrace turns messy work records, instructions, certificates, and exceptions into evidence links, deterministic checks, human-review queues, and dashboard visibility.</p>
+        <div class="boundary-strip">
+          <div class="boundary-card"><strong>AI assists</strong><span>Classifies records, summarizes gaps, drafts reviewer questions.</span></div>
+          <div class="boundary-card"><strong>Rules validate</strong><span>Checks variance, missing links, expiry, status, and routing rules.</span></div>
+          <div class="boundary-card"><strong>Humans approve</strong><span>Closure, risk acceptance, compliance decisions, and exception resolution.</span></div>
+        </div>
+        <div class="hero-actions">
+          <a class="hero-button" href="#dashboard">View dashboard -></a>
+          <a class="hero-link" href="#model">See workflow model</a>
+        </div>
+      </div>
+
+      <div class="hero-preview" aria-label="OpsTrace dashboard preview">
+        <div class="preview-frame">
+          <div class="preview-card">
+            <div class="preview-header">
+              <span>dashboard preview</span>
+              <span>review required</span>
+            </div>
+            <div class="mini-metrics">
+              <div class="mini-metric"><span>Documents</span><strong>12</strong></div>
+              <div class="mini-metric"><span>Evidence links</span><strong>5</strong></div>
+              <div class="mini-metric"><span>Open exceptions</span><strong>3</strong></div>
+              <div class="mini-metric"><span>Clean chains</span><strong>3</strong></div>
+            </div>
+            <div class="preview-chain">
+              <h3>Selected evidence chain</h3>
+              <div class="preview-line"><span>Source</span><div>Work record with mismatched counterpart evidence</div></div>
+              <div class="preview-line"><span>Rule</span><div>Quantity variance exceeds deterministic threshold</div></div>
+              <div class="preview-line"><span>Action</span><div>Route to human reviewer with source records attached</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  </main>
+
+  <div class="dashboard-kicker" id="dashboard">
+    <h2>from evidence gaps to action queues</h2>
+    <p>A calm BI-style control surface for filtering operational records, reviewing blocked work packages, and explaining why each exception needs a human decision.</p>
+  </div>
+
+  <div class="shell">
+
+    <div class="toolbar" aria-label="Dashboard filters">
+      <input class="control" id="searchInput" type="search" placeholder="Search documents, exceptions, work packages">
+      <select class="control" id="severityFilter">
+        <option value="All">All severities</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+      </select>
+      <select class="control" id="disciplineFilter">
+        <option value="All">All disciplines</option>
+      </select>
+      <select class="control" id="workPackageFilter">
+        <option value="All">All work packages</option>
+      </select>
+      <button class="btn secondary" id="resetBtn" type="button">Reset</button>
+    </div>
+
+    <div class="grid metrics" id="metrics"></div>
+
+    <section id="model">
+      <div class="section-head">
+        <div>
+          <h2>30-Second Product Logic</h2>
+          <div class="subtitle">A hiring manager should understand the operating model before reading any table.</div>
+        </div>
+        <span class="pill review">BI-style: filter, drill, explain, route</span>
+      </div>
+      <div class="logic-chain">
+        <div class="logic-step"><span class="num">1</span><strong>Record Intake</strong><span>Source documents are parsed into normalized register items and evidence metadata.</span></div>
+        <div class="logic-step"><span class="num">2</span><strong>Evidence Model</strong><span>Documents become register items, links, statuses, and work packages.</span></div>
+        <div class="logic-step"><span class="num">3</span><strong>Control Checks</strong><span>Rules flag variance, missing closure evidence, and expired certificates.</span></div>
+        <div class="logic-step"><span class="num">4</span><strong>Review Queue</strong><span>Exceptions receive severity, owner, evidence gap, and review state.</span></div>
+        <div class="logic-step"><span class="num">5</span><strong>Decision Visibility</strong><span>Managers see blocked packages, clean chains, and audit-ready evidence.</span></div>
+      </div>
+    </section>
+
+    <div class="grid main-layout">
+      <div>
+        <section>
+          <div class="section-head">
+            <div>
+              <h2>Exception Queue</h2>
+              <div class="subtitle">Click an exception to inspect the evidence chain and risk framing.</div>
+            </div>
+            <span class="pill open" id="queueCount">0 open</span>
+          </div>
+          <div id="exceptionCards"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <div>
+              <h2>Work Package Health</h2>
+              <div class="subtitle">Power BI-style slice by blocked versus clean operating chains.</div>
+            </div>
+          </div>
+          <div class="health-grid" id="workPackageHealth"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <div>
+              <h2>Document Register</h2>
+              <div class="subtitle">Filtered register view with status and compliance redaction state.</div>
+            </div>
+          </div>
+          <div class="table-note"><span class="review-dot"></span>Highlighted rows are linked to an open exception and need human review.</div>
+          <table id="documentsTable"></table>
+        </section>
+      </div>
+
+      <aside>
+        <section class="detail-panel">
+          <div class="section-head">
+            <div>
+              <h2>Evidence Chain Drill-Down</h2>
+              <div class="subtitle">Selected exception: document -> issue -> rule -> human action.</div>
+            </div>
+          </div>
+          <div id="detailPanel"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <div>
+              <h2>Exception Mix</h2>
+              <div class="subtitle">Severity and type distribution from the active filters.</div>
+            </div>
+          </div>
+          <div id="severityBars"></div>
+          <div id="typeBars" style="margin-top:14px;"></div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <div>
+              <h2>Deterministic Checks</h2>
+              <div class="subtitle">The demo is not AI-only. These checks create reviewable outcomes.</div>
+            </div>
+          </div>
+          <div class="check-grid">
+            <div class="check-card"><strong>DWR discrepancy</strong><p>Compares paired records for date, activity, reference, and quantity variance.</p></div>
+            <div class="check-card"><strong>Instruction closure</strong><p>Finds issued instructions without linked execution or closeout evidence.</p></div>
+            <div class="check-card"><strong>Certificate validity</strong><p>Flags expired, missing, or unlinked acceptance and calibration evidence.</p></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div>
+          <h2>Evidence Link Map</h2>
+          <div class="subtitle">This is the core transfer story: risk appears between records, not only inside one document.</div>
+        </div>
+      </div>
+      <table id="linksTable"></table>
+    </section>
+
+    <section id="manufacturing">
+      <div class="section-head">
+        <div>
+          <h2>Manufacturing / AIT Transfer Map</h2>
+          <div class="subtitle">Construction is the source case. Operations traceability is the product category.</div>
+        </div>
+      </div>
+      <div class="mapping-grid" id="mappingGrid"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>FMEA-Inspired Exception Framing</h2>
+          <div class="subtitle">Careful boundary: inspired structure only, not a claim of formal SORA/FMEA/FTA certification expertise.</div>
+        </div>
+      </div>
+      <table class="risk-table" id="riskTable"></table>
+    </section>
+  </div>
+
+  <footer>
+    Portfolio boundary: static MVP using anonymized fixture records. No raw private PDFs, no SAP/ERP integration claim, no automated payment/compliance approval. The dashboard demonstrates BI-style thinking with a small evidence dataset: filters, drill-down, health status, exception routing, and audit boundaries.
+  </footer>
+
+  <script>
+    const data = {
+      project: {
+        name: "OpsTrace MVP",
+        audience: "Manufacturing Operations / Production Digitalization",
+        source_case: "Anonymized regulated field-document workflow",
+        review_date: "2026-06-02"
+      },
+      documents: [
+        { id: "DOC-001", type: "CA_DWR", date: "2021-07-07", ref: "CHG-A", discipline: "Civil / Field Work", status: "recorded", wp: "WP-CHANGE-A", summary: "Inspector-side daily work record for change-order-related work.", qty: 120 },
+        { id: "DOC-002", type: "CONTRACTOR_DWR", date: "2021-06-07", ref: "CHG-A", discipline: "Civil / Field Work", status: "recorded", wp: "WP-CHANGE-A", summary: "Contractor-side daily work record for the same change-order-related work.", qty: 155 },
+        { id: "DOC-003", type: "CHANGE_ORDER", date: "2021-07-12", ref: "CHG-A", discipline: "Commercial / Contract Change", status: "recorded", wp: "WP-CHANGE-A", summary: "Formal change record linked to the disputed work package." },
+        { id: "DOC-004", type: "INSTRUCTION_NOTICE", date: "2021-05-03", ref: "INST-A", discipline: "Schedule / Project Controls", status: "issued", wp: "WP-INSTRUCTION-A", summary: "Instruction requiring schedule revision review and follow-up evidence." },
+        { id: "DOC-005", type: "INFORMATION_REQUEST", date: "2021-06-21", ref: "CLAR-A", discipline: "Traffic / Clarification", status: "closed", wp: "WP-TRAFFIC-MARKING", summary: "Clarification request for temporary pavement markings." },
+        { id: "DOC-006", type: "CONTRACT_MEMO", date: "2021-06-24", ref: "CLAR-A", discipline: "Traffic / Clarification", status: "recorded", wp: "WP-TRAFFIC-MARKING", summary: "Formal response memo linked to the clarification request." },
+        { id: "DOC-007", type: "CERTIFICATE", date: "2021-12-01", ref: "CERT-A", discipline: "Electrical / Compliance Evidence", status: "accepted", wp: "WP-ELECTRICAL", summary: "Acceptance certificate for electrical work." },
+        { id: "DOC-008", type: "CALIBRATION_CERTIFICATE", date: "2021-02-24", ref: "CAL-A", discipline: "Grading / Compliance Evidence", status: "expired", wp: "WP-GRADING-QC", summary: "Calibration evidence for a measurement device used in quality verification.", expires: "2022-02-24" },
+        { id: "DOC-009", type: "INCIDENT_NOTIFICATION", date: "2021-08-10", ref: "INC-A", discipline: "Safety / Operational Exception", status: "recorded", wp: "WP-SAFETY-EXCEPTION", summary: "Incident record requiring reviewable follow-up status." },
+        { id: "DOC-010", type: "FORM_B_SUMMARY", date: "2021-06-17", ref: "FORMB-001", discipline: "Commercial / Quantity Support", status: "recorded", wp: "WP-QUANTITY-SUPPORT", summary: "Quantity/completion support record." },
+        { id: "DOC-011", type: "CA_DWR", date: "2021-06-17", ref: "FORMB-001", discipline: "Commercial / Quantity Support", status: "recorded", wp: "WP-QUANTITY-SUPPORT", summary: "Daily work record supporting the Form B quantity package.", qty: 40 },
+        { id: "DOC-012", type: "CONTRACTOR_DWR", date: "2021-06-17", ref: "FORMB-001", discipline: "Commercial / Quantity Support", status: "recorded", wp: "WP-QUANTITY-SUPPORT", summary: "Matching contractor work record supporting the Form B quantity package.", qty: 41 }
+      ],
+      links: [
+        { source: "DOC-001", target: "DOC-002", type: "CA_TO_CONTRACTOR_DWR_PAIR", confidence: .96, review: true },
+        { source: "DOC-001", target: "DOC-003", type: "DWR_SUPPORTS_CHANGE_ORDER", confidence: .91, review: true },
+        { source: "DOC-005", target: "DOC-006", type: "IR_HAS_RESPONSE", confidence: .98, review: false },
+        { source: "DOC-010", target: "DOC-011", type: "FORM_B_SUPPORTED_BY_DWR", confidence: .88, review: false },
+        { source: "DOC-011", target: "DOC-012", type: "CA_TO_CONTRACTOR_DWR_PAIR", confidence: .95, review: false }
+      ],
+      exceptions: [
+        { id: "EX-AUTO-DWR-001", source: "DOC-001", related: "DOC-002", type: "DWR_DISCREPANCY", severity: "High", gap: "date mismatch; quantity variance 29.2% exceeds 5% threshold", owner: "Human reviewer", status: "Open", wp: "WP-CHANGE-A", rule: "Paired work records must align on date, activity, reference, and quantity tolerance." },
+        { id: "EX-AUTO-INSTR-001", source: "DOC-004", related: null, type: "MISSING_FOLLOW_UP_EVIDENCE", severity: "Medium", gap: "Instruction Notice is issued but no linked follow-up evidence exists.", owner: "Human reviewer", status: "Open", wp: "WP-INSTRUCTION-A", rule: "Issued instructions must link to execution evidence or closure record." },
+        { id: "EX-AUTO-CERT-001", source: "DOC-008", related: null, type: "EXPIRED_CERTIFICATE", severity: "High", gap: "Certificate expired on 2022-02-24 before review date 2026-06-02.", owner: "Human reviewer", status: "Open", wp: "WP-GRADING-QC", rule: "Compliance evidence must be valid at review or final acceptance." }
+      ],
+      mapping: [
+        ["DWR", "Work execution record", "Production traveler / station work record", "Compare operator record and supervisor/system record before release."],
+        ["CA Diary", "Daily operational context", "Supervisor shift log", "Capture blockers, staffing changes, rework notes, and unresolved issues."],
+        ["Change Order", "Formal change trigger", "Engineering change / rework order", "Link changed work to supporting evidence and approval status."],
+        ["Information Request", "Clarification workflow", "Technical clarification request", "Track unclear requirements before production continues."],
+        ["Instruction Notice", "Formal instruction requiring closure evidence", "Work instruction update", "Ensure new instructions are linked to execution evidence."],
+        ["Certificate / Calibration", "Compliance evidence", "Quality acceptance / calibration record", "Flag expired or missing evidence before final acceptance."],
+        ["Incident Notification", "Operational exception", "Nonconformance / safety event", "Route incident follow-up to human review and closure tracking."]
+      ]
+    };
+
+    const state = {
+      search: "",
+      severity: "All",
+      discipline: "All",
+      wp: "All",
+      selectedException: "EX-AUTO-DWR-001",
+      metricFilter: null
+    };
+
+    const byId = id => data.documents.find(d => d.id === id);
+    const unique = arr => [...new Set(arr)].sort();
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[ch]));
+
+    function initFilters() {
+      const discipline = document.getElementById("disciplineFilter");
+      unique(data.documents.map(d => d.discipline)).forEach(v => discipline.innerHTML += `<option value="${esc(v)}">${esc(v)}</option>`);
+      const wp = document.getElementById("workPackageFilter");
+      unique(data.documents.map(d => d.wp)).forEach(v => wp.innerHTML += `<option value="${esc(v)}">${esc(v)}</option>`);
+    }
+
+    function filteredDocuments() {
+      const q = state.search.toLowerCase();
+      return data.documents.filter(d => {
+        const exceptionForDoc = data.exceptions.find(e => e.source === d.id || e.related === d.id);
+        const matchesSearch = !q || Object.values(d).join(" ").toLowerCase().includes(q) || (exceptionForDoc && Object.values(exceptionForDoc).join(" ").toLowerCase().includes(q));
+        const matchesDiscipline = state.discipline === "All" || d.discipline === state.discipline;
+        const matchesWp = state.wp === "All" || d.wp === state.wp;
+        const matchesSeverity = state.severity === "All" || (exceptionForDoc && exceptionForDoc.severity === state.severity);
+        const matchesMetric = !state.metricFilter ||
+          (state.metricFilter === "review" && exceptionForDoc) ||
+          (state.metricFilter === "clean" && !exceptionForDoc && data.links.some(l => l.source === d.id || l.target === d.id)) ||
+          (state.metricFilter === "certificate" && /CERTIFICATE/.test(d.type));
+        return matchesSearch && matchesDiscipline && matchesWp && matchesSeverity && matchesMetric;
+      });
+    }
+
+    function filteredExceptions(docs) {
+      const ids = new Set(docs.map(d => d.id));
+      return data.exceptions.filter(e => ids.has(e.source) || (e.related && ids.has(e.related)));
+    }
+
+    function renderMetrics(docs, exceptions) {
+      const cleanChains = data.links.filter(l => !l.review).length;
+      const certDocs = docs.filter(d => /CERTIFICATE/.test(d.type)).length;
+      const items = [
+        ["Documents", docs.length, "Filtered register records", null],
+        ["Evidence Links", data.links.filter(l => docs.some(d => d.id === l.source || d.id === l.target)).length, "Traceable source-target pairs", null],
+        ["Open Exceptions", exceptions.length, "Click to focus review items", "review"],
+        ["Clean Chains", cleanChains, "Evidence links without review", "clean"],
+        ["Certificate Evidence", certDocs, "Acceptance / calibration records", "certificate"]
+      ];
+      document.getElementById("metrics").innerHTML = items.map(([label, value, context, filter]) => `
+        <button class="metric ${state.metricFilter === filter ? "active" : ""}" type="button" data-metric="${filter || ""}">
+          <div class="label">${esc(label)}</div>
+          <div class="value ${label === "Open Exceptions" ? "red" : label === "Clean Chains" ? "green" : ""}">${esc(value)}</div>
+          <div class="context">${esc(context)}</div>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-metric]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const val = btn.dataset.metric || null;
+          state.metricFilter = state.metricFilter === val ? null : val;
+          render();
+        });
+      });
+    }
+
+    function renderBars(containerId, entries, colorFor) {
+      const max = Math.max(1, ...entries.map(([,v]) => v));
+      document.getElementById(containerId).innerHTML = entries.map(([label, value]) => `
+        <div class="bar-row">
+          <span>${esc(label)}</span>
+          <div class="track"><div class="fill ${colorFor(label)}" style="width:${Math.max(8, (value / max) * 100)}%"></div></div>
+          <strong>${esc(value)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderExceptions(exceptions) {
+      document.getElementById("queueCount").textContent = `${exceptions.length} open`;
+      if (!exceptions.some(e => e.id === state.selectedException) && exceptions[0]) state.selectedException = exceptions[0].id;
+      document.getElementById("exceptionCards").innerHTML = exceptions.length ? exceptions.map(e => `
+        <article class="exception-card ${state.selectedException === e.id ? "active" : ""}" data-exception="${esc(e.id)}">
+          <div class="exception-top">
+            <div>
+              <div class="exception-title">${esc(e.type.replaceAll("_", " "))}</div>
+              <div class="exception-meta">${esc(e.id)} · ${esc(e.wp)}</div>
+            </div>
+            <span class="pill ${e.severity.toLowerCase()}">${esc(e.severity)}</span>
+          </div>
+          <div class="evidence-gap">${esc(e.gap)}</div>
+          <span class="pill open">${esc(e.status)}</span>
+          <span class="pill soft">${esc(e.owner)}</span>
+        </article>
+      `).join("") : `<p class="muted">No exceptions match the current filters.</p>`;
+      document.querySelectorAll("[data-exception]").forEach(card => {
+        card.addEventListener("click", () => {
+          state.selectedException = card.dataset.exception;
+          render();
+        });
+      });
+    }
+
+    function renderDetail(exceptions) {
+      const selected = exceptions.find(e => e.id === state.selectedException) || data.exceptions.find(e => e.id === state.selectedException) || data.exceptions[0];
+      const source = byId(selected.source);
+      const related = selected.related ? byId(selected.related) : null;
+      const relatedLinks = data.links.filter(l => l.source === selected.source || l.target === selected.source || l.source === selected.related || l.target === selected.related);
+      document.getElementById("detailPanel").innerHTML = `
+        <span class="pill ${selected.severity.toLowerCase()}">${esc(selected.severity)}</span>
+        <h3 style="margin:12px 0 6px;font-size:20px;">${esc(selected.type.replaceAll("_", " "))}</h3>
+        <div class="muted">${esc(selected.id)} · ${esc(selected.wp)}</div>
+        <div class="chain-view">
+          <div class="chain-node"><div class="node-type">SOURCE</div><div><strong>${esc(source.id)} ${esc(source.type)}</strong><br><span class="muted">${esc(source.summary)}</span></div></div>
+          ${related ? `<div class="chain-node"><div class="node-type">RELATED</div><div><strong>${esc(related.id)} ${esc(related.type)}</strong><br><span class="muted">${esc(related.summary)}</span></div></div>` : ""}
+          <div class="chain-node"><div class="node-type">RULE</div><div>${esc(selected.rule)}</div></div>
+          <div class="chain-node"><div class="node-type">GAP</div><div>${esc(selected.gap)}</div></div>
+          <div class="chain-node"><div class="node-type">ACTION</div><div>Route to ${esc(selected.owner)} for closure decision. AI may summarize; human approves.</div></div>
+        </div>
+        <p class="muted" style="margin-bottom:0;">Linked evidence records: ${relatedLinks.length ? relatedLinks.map(l => `${l.source}->${l.target}`).join(", ") : "none detected"}</p>
+      `;
+    }
+
+    function renderHealth(docs, exceptions) {
+      const packages = unique(data.documents.map(d => d.wp));
+      document.getElementById("workPackageHealth").innerHTML = packages.map(wp => {
+        const docCount = data.documents.filter(d => d.wp === wp).length;
+        const ex = data.exceptions.filter(e => e.wp === wp);
+        const status = ex.length ? "Blocked" : "Clean";
+        const filtered = state.wp === wp;
+        return `
+          <button class="health-card ${filtered ? "active" : ""}" type="button" data-wp="${esc(wp)}">
+            <strong>${esc(wp)}</strong>
+            <div class="mini"><span>${docCount} document(s)</span><span class="${ex.length ? "red" : "green"}">${status}</span></div>
+          </button>
+        `;
+      }).join("");
+      document.querySelectorAll("[data-wp]").forEach(card => {
+        card.addEventListener("click", () => {
+          state.wp = state.wp === card.dataset.wp ? "All" : card.dataset.wp;
+          document.getElementById("workPackageFilter").value = state.wp;
+          render();
+        });
+      });
+    }
+
+    function renderTable(id, headers, rows, highlightIds = new Set()) {
+      document.getElementById(id).innerHTML = `
+        <thead><tr>${headers.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${rows.map(r => `<tr class="${highlightIds.has(r._id) ? "highlight" : ""}">${r.cells.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>
+      `;
+    }
+
+    function renderDocumentTable(docs, exceptions) {
+      const highlight = new Set(exceptions.flatMap(e => [e.source, e.related]).filter(Boolean));
+      renderTable("documentsTable",
+        ["ID", "Type", "Date", "Discipline", "Work Package", "Status"],
+        docs.map(d => ({
+          _id: d.id,
+          cells: [
+            esc(d.id),
+            esc(d.type),
+            esc(d.date),
+            esc(d.discipline),
+            esc(d.wp),
+            `<span class="pill ${d.status === "expired" ? "high" : d.status === "accepted" || d.status === "closed" ? "clean" : "soft"}">${esc(d.status)}</span>`
+          ]
+        })),
+        highlight
+      );
+    }
+
+    function renderLinks(docs) {
+      const ids = new Set(docs.map(d => d.id));
+      const links = data.links.filter(l => ids.has(l.source) || ids.has(l.target));
+      renderTable("linksTable",
+        ["Source", "Target", "Link Type", "Confidence", "Review Required"],
+        links.map(l => ({
+          _id: l.source,
+          cells: [
+            esc(l.source),
+            esc(l.target),
+            esc(l.type),
+            `${Math.round(l.confidence * 100)}%`,
+            `<span class="pill ${l.review ? "review" : "clean"}">${l.review ? "Yes" : "No"}</span>`
+          ]
+        }))
+      );
+    }
+
+    function renderMapping() {
+      document.getElementById("mappingGrid").innerHTML = data.mapping.map(([source, role, equiv, use]) => `
+        <div class="map-card">
+          <div class="source">${esc(source)}</div>
+          <div class="equiv">${esc(equiv)}</div>
+          <div class="use">${esc(use)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderRiskTable() {
+      renderTable("riskTable",
+        ["Field", "How OpsTrace Uses It"],
+        [
+          ["Failure mode", "Mismatched work record, missing instruction closure, expired certificate evidence."],
+          ["Cause", "Scattered records, manual handoffs, unclear status ownership, evidence not linked to work package."],
+          ["Detection", "Deterministic checks inspect dates, quantities, links, status, and expiry."],
+          ["Mitigation", "Route exception to human reviewer with source document, evidence gap, and rule explanation."],
+          ["Residual status", "Open until reviewer closes, accepts risk, or links missing evidence."]
+        ].map((cells, i) => ({ _id: String(i), cells: cells.map(esc) }))
+      );
+    }
+
+    function render() {
+      const docs = filteredDocuments();
+      const exceptions = filteredExceptions(docs);
+      renderMetrics(docs, exceptions);
+      renderExceptions(exceptions);
+      renderDetail(exceptions);
+      renderHealth(docs, exceptions);
+      renderDocumentTable(docs, exceptions);
+      renderLinks(docs);
+
+      const severityCounts = {};
+      exceptions.forEach(e => severityCounts[e.severity] = (severityCounts[e.severity] || 0) + 1);
+      renderBars("severityBars", Object.entries(Object.keys(severityCounts).length ? severityCounts : { None: 0 }), label => label === "High" ? "red" : label === "Medium" ? "amber" : "green");
+
+      const typeCounts = {};
+      exceptions.forEach(e => typeCounts[e.type.replaceAll("_", " ")] = (typeCounts[e.type.replaceAll("_", " ")] || 0) + 1);
+      renderBars("typeBars", Object.entries(Object.keys(typeCounts).length ? typeCounts : { "No active exceptions": 0 }), () => "blue");
+
+      renderMapping();
+      renderRiskTable();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", e => { state.search = e.target.value; render(); });
+    document.getElementById("severityFilter").addEventListener("change", e => { state.severity = e.target.value; render(); });
+    document.getElementById("disciplineFilter").addEventListener("change", e => { state.discipline = e.target.value; render(); });
+    document.getElementById("workPackageFilter").addEventListener("change", e => { state.wp = e.target.value; render(); });
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state.search = "";
+      state.severity = "All";
+      state.discipline = "All";
+      state.wp = "All";
+      state.metricFilter = null;
+      state.selectedException = "EX-AUTO-DWR-001";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("severityFilter").value = "All";
+      document.getElementById("disciplineFilter").value = "All";
+      document.getElementById("workPackageFilter").value = "All";
+      render();
+    });
+
+    initFilters();
+    render();
+  </script>
+</body>
+</html>
