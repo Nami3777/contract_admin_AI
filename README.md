@@ -1,6 +1,12 @@
-# Contract Administration AI Pipeline
+# Contract Admin AI + OpsTrace
 
-AI-powered workflow tool for construction contract administration. The system compares contractor Daily Work Reports against inspector records, extracts structured line items from PDFs, flags quantity discrepancies, and returns an audit-ready reconciliation report for human review.
+AI-assisted workflow system for turning messy operational records into structured data, deterministic checks, exception queues, human review, and dashboard visibility.
+
+The source case is construction contract administration: comparing contractor Daily Work Reports against inspector records for payment-sensitive discrepancies. The broader product thesis is **OpsTrace**: the same pattern applied to procurement, manufacturing, AIT, logistics, and other operations-heavy workflows where records, evidence, and decisions are scattered.
+
+Core principle:
+
+> AI assists. Deterministic logic validates. Humans approve risky exceptions.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111+-green.svg)](https://fastapi.tiangolo.com/)
@@ -14,11 +20,74 @@ AI-powered workflow tool for construction contract administration. The system co
 
 ---
 
+## 30-Second Product Thesis
+
+I built Contract Admin AI because I saw a real workflow problem: high-value business decisions were trapped in PDFs, field records, Excel-like comparison work, and delayed manual reconciliation.
+
+The first product proved the core loop:
+
+```text
+PDF records -> AI structured extraction -> Pydantic schema -> deterministic reconciliation -> exception report -> human review
+```
+
+OpsTrace expands that loop into an operations traceability layer:
+
+```text
+messy records -> document register -> evidence links -> deterministic checks -> exception queue -> dashboard visibility
+```
+
+This is directly relevant to procurement and manufacturing data workflows: supplier records, purchase orders, invoices, contracts, materials, work instructions, quality records, and delivery evidence all create value only when they can be linked, checked, explained, and reviewed.
+
+## OpsTrace Proof Bundle
+
+[![OpsTrace dashboard - overview](ops_trace_proof_bundle/assets/opstrace_hero.png)](ops_trace_proof_bundle/ops_trace_dashboard.html)
+
+**OpsTrace is the transfer layer.** Construction is the source case; operations traceability is the product category.
+
+What it demonstrates:
+
+- document registers for messy operational records
+- evidence links between records, not just inside one document
+- deterministic exception checks for variance, missing closure evidence, and expired or invalid records
+- human-review queues with source records and rule explanations attached
+- BI-style visibility into blocked work packages, clean chains, and review status
+- manufacturing / AIT transfer map for production travelers, work instructions, calibration records, engineering changes, and nonconformance events
+
+Run the static dashboard locally:
+
+```bash
+cd ops_trace_proof_bundle
+python tools/validate_ops_trace.py
+# then open ops_trace_dashboard.html
+```
+
+[Open the OpsTrace proof bundle](ops_trace_proof_bundle/) for the dashboard, fixture data, validation script, and proof notes.
+
+## Procurement / Manufacturing Transfer
+
+| Contract Admin AI / OpsTrace | Procurement / Manufacturing Equivalent |
+|---|---|
+| Contractor vs inspector DWR discrepancy | PO / invoice / supplier record mismatch |
+| Work package | Supplier / material / contract object |
+| Quantity variance threshold | Price, delivery, volume, or material anomaly rule |
+| Instruction without closure evidence | Work instruction or change order without execution proof |
+| Expired certificate / calibration record | Quality, compliance, or supplier qualification issue |
+| Exception queue | Savings, risk, or review-opportunity queue |
+| Audit-ready reconciliation report | Explainable procurement decision history |
+
+## Builder Decisions That Matter
+
+- **AI extracts; deterministic logic validates.** Payment-sensitive variance checks are reproducible and auditable.
+- **Humans approve risky exceptions.** The system prepares the decision; it does not auto-approve payment, compliance, or risk closure.
+- **Workflow time is the success metric.** Users care about review-ready output, not model latency alone.
+- **Constraints shaped the product.** Real documents are inconsistent, commercial data is sensitive, and ambiguous discrepancies need review context.
+
 ## Repo Guide
 
 | Where to start | What you'll find |
 |---|---|
 | This README | Problem, decisions, architecture, results |
+| [`ops_trace_proof_bundle/`](ops_trace_proof_bundle/) | OpsTrace dashboard, screenshots, fixture data, deterministic validation, manufacturing/AIT transfer |
 | [`case_study/`](case_study/) | PDF case study + screenshot |
 | [`api/`](api/) | FastAPI app — ingestion, extraction, reconciliation |
 | [`demo/`](demo/) | Standalone demo scripts and mock data generator |
@@ -33,10 +102,10 @@ AI-powered workflow tool for construction contract administration. The system co
 | Item | Details |
 |---|---|
 | Role | Solo product builder, business analyst, and AI implementation lead |
-| Domain | Construction contract administration, Daily Work Report reconciliation |
+| Domain | Contract reconciliation source case; operations traceability transfer layer |
 | Users | Contract Administrators, Project Managers, Field Inspectors |
 | Timeline | Independent build over 6 months |
-| Scope | User research, workflow mapping, requirements, PDF ingestion, LLM extraction, deterministic reconciliation, REST API, demo UI |
+| Scope | User research, workflow mapping, requirements, PDF ingestion, LLM extraction, deterministic reconciliation, REST API, demo UI, OpsTrace dashboard |
 | Tools | Python, FastAPI, PyMuPDF, Pydantic V2, Claude Haiku (Anthropic API), SQLite |
 | Constraint | Sensitive construction documents, inconsistent PDF layouts, auditability requirements, no production deployment |
 | Outcome | 85% processing-time reduction (2 hours → 18 minutes per contract workflow); 95% extraction accuracy |
@@ -255,7 +324,3 @@ All test data is synthetically generated or anonymized. Provided as-is for portf
 ---
 
 *Last updated: May 2026 | Model: claude-haiku-4-5-20251001 | Stack: FastAPI · PyMuPDF · Pydantic V2 · Anthropic SDK*
-
----
-
-**Also in this repo:** [OpsTrace Proof Bundle](ops_trace_proof_bundle/) - operations traceability layer for compliance-heavy workflows (static MVP, anonymized fixture records).
