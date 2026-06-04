@@ -15,11 +15,6 @@ Core principle:
 
 ---
 
-
-![Reconciliation demo UI](assets/screenshot.png)
-
----
-
 ## 30-Second Product Thesis
 
 I built Contract Admin AI because I saw a real workflow problem: high-value business decisions were trapped in PDFs, field records, Excel-like comparison work, and delayed manual reconciliation.
@@ -151,6 +146,8 @@ I considered using per-call LLM latency as the primary metric. I chose end-to-en
 
 ## What I Built
 
+![Reconciliation demo UI](assets/screenshot.png)
+
 Four-stage pipeline:
 
 ```
@@ -228,6 +225,12 @@ contract_admin_AI/
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── Procfile
+├── ops_trace_proof_bundle/
+│   ├── ops_trace_dashboard.html  Static BI-style traceability dashboard
+│   ├── assets/          Hero and transfer map screenshots
+│   ├── data/            Anonymized fixture data and dashboard output
+│   ├── tools/           Validation script
+│   └── docs/            Risk model and boundary notes
 ├── render.yaml          Render.com deploy config (must be at root)
 └── LICENSE
 ```
@@ -309,7 +312,7 @@ Current limitations:
 
 ## Compliance Design
 
-- **EU AI Act aligned:** deterministic Layer 3, human-verifiable outputs, model version pinned in code
+- **EU AI Act-aware design:** deterministic layer, human-verifiable outputs, model version tracked in code
 - **MTO OPSS 180:** ±5% variance threshold enforced, audit fields on every response
 - **No user data retained:** temp files deleted in `finally` block, even on error
 
