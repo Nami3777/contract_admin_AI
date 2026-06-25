@@ -4,7 +4,6 @@ FastAPI application — DWR Reconciliation API.
 Serves the static portfolio page and exposes POST /api/reconcile
 for live PDF-to-reconciliation processing.
 """
-import os
 import tempfile
 from pathlib import Path
 
@@ -72,34 +71,17 @@ async def reconcile(
     _validate_pdf(ca_bytes, "ca_pdf")
     _validate_pdf(con_bytes, "contractor_pdf")
 
-    ca_tmp = None
-    con_tmp = None
-    try:
-        ca_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        ca_tmp.write(ca_bytes)
-        ca_tmp.flush()
-        ca_tmp.close()
-
-        con_tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        con_tmp.write(con_bytes)
-        con_tmp.flush()
-        con_tmp.close()
-
-        result = await run_pipeline(ca_tmp.name, con_tmp.name)
-        return result
-
-    except HTTPException:
-        raise
-    except Exception:
-        # Do not expose internal error details to the caller
-        raise HTTPException(status_code=500, detail="Processing failed. Please check your PDFs and try again.")
-    finally:
-        for tmp in (ca_tmp, con_tmp):
-            if tmp is not None:
-                try:
-                    os.unlink(tmp.name)
-                except (FileNotFoundError, AttributeError):
-                    pass
+    with tempfile.TemporaryDirectory() as tmpdir:
+        ca_path = Path(tmpdir) / "ca.pdf"
+        con_path = Path(tmpdir) / "con.pdf"
+        ca_path.write_bytes(ca_bytes)
+        con_path.write_bytes(con_bytes)
+        try:
+            return await run_pipeline(str(ca_path), str(con_path))
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(status_code=500, detail="Processing failed. Please check your PDFs and try again.")
 
 
 @app.get("/health")

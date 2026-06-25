@@ -134,9 +134,9 @@ I considered letting the LLM both extract and compare quantities. I rejected tha
 
 I considered a fully automated approval flow. The constraint was compliance risk: ambiguous quantities, date mismatches, and missing line items still need human judgment. The system returns flagged discrepancies to the contract administrator for review, not an automated decision.
 
-### 4. Direct PDF parsing vs. layered ingestion
+### 4. Direct PDF parsing
 
-I tested Docling for preserving table structures and PyMuPDF as the fallback for difficult layouts. Real construction PDFs vary heavily in format, quality, and column layout. A layered ingestion design ensures one parser failing does not break the entire workflow.
+I tested Docling for preserving table structures but dropped it — accuracy gains did not justify the dependency and setup overhead. The current implementation uses PyMuPDF exclusively. Real construction PDFs vary in format and quality; the Claude extraction prompt handles layout inconsistencies at the text level rather than the parsing level.
 
 ### 5. Technical latency vs. workflow time as success metric
 
@@ -314,7 +314,7 @@ Current limitations:
 
 - **EU AI Act-aware design:** deterministic layer, human-verifiable outputs, model version tracked in code
 - **MTO OPSS 180:** ±5% variance threshold enforced, audit fields on every response
-- **No user data retained:** temp files deleted in `finally` block, even on error
+- **No user data retained:** temp files deleted by `TemporaryDirectory` context manager, guaranteed on success and error
 
 ---
 

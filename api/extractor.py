@@ -121,5 +121,3 @@ async def extract_dwr_with_claude(content: str, source_label: str = "") -> DWRRe
             if attempt < max_retries - 1:
                 continue
             raise RuntimeError(f"Extraction failed after {max_retries} attempts: {e}")
-
-    raise RuntimeError(f"Extraction failed: {last_error}")

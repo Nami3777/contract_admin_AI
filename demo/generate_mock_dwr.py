@@ -6,12 +6,9 @@ Creates matched CA + Contractor pairs with deliberate discrepancies
 for testing the reconciliation pipeline.
 """
 import sys
-import io
-
-# Force UTF-8 encoding on Windows to handle emojis
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 
 from pathlib import Path
 from datetime import datetime

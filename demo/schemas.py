@@ -7,28 +7,10 @@ These schemas enforce structured output from the LLM extraction layer.
 
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
-from datetime import date
-from enum import Enum
 
 
 # ============================================================
-# Enums for controlled vocabularies
-# ============================================================
-
-class DocumentSource(str, Enum):
-    CA = "CA"                # Contract Administrator (Inspector)
-    CONTRACTOR = "Contractor"
-
-
-class ReconciliationStatus(str, Enum):
-    MATCH = "MATCH"          # Within 5% variance
-    FLAG = "FLAG"            # Exceeds 5% variance
-    NEW = "NEW"              # Present in one report only
-    MISSING = "MISSING"      # Expected but absent
-
-
-# ============================================================
-# Layer 2: LLM Extraction Schemas
+# LLM Extraction Schemas
 # ============================================================
 
 class DWRHeader(BaseModel):
@@ -120,73 +102,3 @@ class DWRReport(BaseModel):
     materials: List[MaterialLineItem] = Field(default_factory=list)
     comments: List[DWRComment] = Field(default_factory=list)
 
-
-# ============================================================
-# Layer 3: Reconciliation Schemas
-# ============================================================
-
-class ReconciliationLineItem(BaseModel):
-    """Single line item comparison between CA and Contractor"""
-    category: str = Field(..., description="Labour, Equipment, or Material")
-    description: str = Field(..., description="Item description for matching")
-    ca_value: Optional[float] = Field(None, description="CA (Inspector) reported value")
-    contractor_value: Optional[float] = Field(None, description="Contractor reported value")
-    unit: str = Field(default="hours", description="Unit of measure")
-    variance_pct: Optional[float] = Field(None, description="Percentage difference")
-    status: ReconciliationStatus = Field(..., description="MATCH, FLAG, NEW, or MISSING")
-    notes: Optional[str] = Field(None, description="Explanation of discrepancy")
-
-
-class ReconciliationReport(BaseModel):
-    """Complete reconciliation between CA and Contractor DWRs"""
-    change_order: str = Field(..., description="Change Order number")
-    work_date: str = Field(..., description="Date of work")
-    ca_record_id: str = Field(..., description="CA DWR Record ID")
-    contractor_record_id: str = Field(..., description="Contractor DWR Record ID")
-    ca_created_by: str
-    contractor_created_by: str
-    line_items: List[ReconciliationLineItem] = Field(default_factory=list)
-    total_ca_labour_hours: float = 0.0
-    total_contractor_labour_hours: float = 0.0
-    total_ca_equipment_hours: float = 0.0
-    total_contractor_equipment_hours: float = 0.0
-    flags_count: int = 0
-    matches_count: int = 0
-    new_items_count: int = 0
-
-
-# ============================================================
-# Change Order Schema (for reference document extraction)
-# ============================================================
-
-class ChangeOrderSummary(BaseModel):
-    """Extracted summary from Change Order PDF"""
-    record_id: str = Field(..., description="e.g. 2020-4091-CO-1")
-    title: str = Field(..., description="Change order title")
-    contract_no: str
-    category: Optional[str] = Field(None)
-    change_order_type: Optional[str] = Field(None)
-    basis_of_payment: Optional[str] = Field(None)
-    description_of_work: str = Field(..., description="Full description")
-    lumpsum_value: Optional[float] = Field(None, description="Dollar value")
-    status: Optional[str] = Field(None, description="Approved, Draft, etc.")
-    related_ir: Optional[str] = Field(None, description="Related IR number")
-    created_by: Optional[str] = Field(None)
-    created_date: Optional[str] = Field(None)
-
-
-# ============================================================
-# Information Request Schema
-# ============================================================
-
-class InformationRequestSummary(BaseModel):
-    """Extracted summary from IR PDF"""
-    record_id: str = Field(..., description="e.g. 2020-4091-IR-31")
-    title: str
-    contract_no: str
-    reason: str = Field(..., description="Reason for the IR")
-    details: str = Field(..., description="Description of the request")
-    response: Optional[str] = Field(None, description="Official response if available")
-    response_date: Optional[str] = Field(None)
-    issued_by: Optional[str] = Field(None)
-    status: Optional[str] = Field(None)

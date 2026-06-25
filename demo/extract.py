@@ -5,14 +5,11 @@ Uses Ollama + Llama 3.2 with Pydantic V2 structured output.
 Extracts labour, equipment, materials, and metadata from DWR markdown.
 """
 import sys
-import io
-
-# Force UTF-8 encoding on Windows to handle emojis
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 
-
+import re
 import ollama
 import json
 import sqlite3
@@ -435,9 +432,7 @@ def reconcile_dwrs(ca_report: DWRReport, contractor_report: DWRReport) -> List[d
         Handles fragmented names like '94 INTL 4900 TANDEM CRASH' vs '94 INTL'.
         Extracts the asset number prefix + first keyword as the canonical key.
         """
-        import re
         clean = name.upper().strip().replace("  ", " ")
-        # Remove non-alphanumeric except spaces
         clean = re.sub(r'[^A-Z0-9 ]', '', clean)
         return clean.strip()
 
@@ -449,7 +444,6 @@ def reconcile_dwrs(ca_report: DWRReport, contractor_report: DWRReport) -> List[d
         '12 CHEV 2500HD' -> '12 CHEV'
         'TC-54s' -> 'TC54'
         """
-        import re
         clean = name.upper().strip()
         clean = re.sub(r'[^A-Z0-9 ]', '', clean)
         parts = clean.split()
@@ -690,7 +684,6 @@ def main():
     # Process each pair
     for ca_file in ca_files:
         # Find matching contractor file by change order
-        import re
         co_search = re.search(r'CO-(\d+)', ca_file.stem)
         if co_search:
             co_match = f"CO-{co_search.group(1)}"
